@@ -7,24 +7,24 @@
 
 typedef struct GlobalDescriptorTable
 {
-	unsigned short	limit_low;
-	unsigned short	base_low;
-	unsigned char	base_middle;
-	unsigned char	access;
-	unsigned char	granularity;
-	unsigned char	base_high;
+    unsigned short	limit_low;
+    unsigned short	base_low;
+    unsigned char	base_middle;
+    unsigned char	access;
+    unsigned char	granularity;
+    unsigned char	base_high;
 } __attribute__((packed)) GDT;
 
 typedef struct GlobalDescriptorTablePointer
 {
-	unsigned short	limit;
-	void* 			base;
+    unsigned short	limit;
+    void* 			base;
 } __attribute__((packed)) GDT_PTR;
 
 extern GDT gdt[6];
 extern GDT_PTR gdt_ptr;
 
-void gdt_flush();
+extern void gdt_flush(void);
 
 /**
  * \brief Sets a new descriptor in the Global Descriptor Table (GDT)

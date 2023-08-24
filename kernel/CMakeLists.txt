@@ -14,6 +14,11 @@ set(C_OPTIONS
         "-mno-red-zone"
 )
 
+set(ASM_OPTIONS
+    "-Fdwarf"
+    "-g"
+)
+
 set(LINKER_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/linker.ld")
 
 set(LINKER_OPTIONS
@@ -27,10 +32,14 @@ set(LINKER_OPTIONS
 
 add_executable(kernel
         source/kernel.c
+        source/GDT.c
+        source/ITR.c
+        source/fuck_me_daddy.asm
 )
 
 target_link_options(kernel PRIVATE ${LINKER_OPTIONS})
 target_compile_options(kernel PRIVATE $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}>)
+target_include_directories(kernel PRIVATE include)
 
 set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 

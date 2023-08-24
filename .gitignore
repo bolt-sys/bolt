@@ -1,4 +1,1 @@
-/limine
-/ovmf
-*.iso
-*.hdd
+/cmake-build-*

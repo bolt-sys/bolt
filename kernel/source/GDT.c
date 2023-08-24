@@ -2,7 +2,7 @@
 // Created by Emil Karpawitz on 8/24/23.
 //
 
-#include "GDT.h"
+#include "../include/GDT.h"
 
 
 GDT gdt[6];

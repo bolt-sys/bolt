@@ -4,4 +4,5 @@ project(bolt
     VERSION 0.1.0
     )
 
+add_subdirectory(external)
 add_subdirectory(kernel)

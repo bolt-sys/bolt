@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
-#include "../limine.h"
-#include "../include/GDT.h"
+
+#include <limine.h>
 
 // The Limine requests can be placed anywhere, but it is important that
 // the compiler does not optimise them away, so, usually, they should
@@ -86,9 +86,6 @@ void _start(void) {
      || framebuffer_request.response->framebuffer_count < 1) {
         hcf();
     }
-
-	// Install the GDT.
-	gdt_install();
 
     // Fetch the first framebuffer.
     struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];

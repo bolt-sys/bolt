@@ -1,3 +1,0 @@
-[submodule "external/limine"]
-	path = external/limine
-	url = https://github.com/limine-bootloader/limine.git

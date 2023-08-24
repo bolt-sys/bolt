@@ -38,7 +38,7 @@ add_executable(kernel
 )
 
 target_link_options(kernel PRIVATE ${LINKER_OPTIONS})
-target_compile_options(kernel PRIVATE $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}>)
+target_compile_options(kernel PRIVATE $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}> $<$<COMPILE_LANGUAGE:ASM_NASM>:${ASM_OPTIONS}>)
 target_include_directories(kernel PRIVATE include)
 
 set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})

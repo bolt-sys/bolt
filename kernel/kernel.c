@@ -90,10 +90,17 @@ void _start(void) {
     struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
 
     // Note: we assume the framebuffer model is RGB with 32-bit pixels.
-    for (size_t i = 0; i < 100; i++) {
-        uint32_t *fb_ptr = framebuffer->address;
-        fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
-    }
+	uint32_t *fb_ptr = framebuffer->address;
+
+	const int radius = 70;
+
+	for (int j = 0; j < radius*2; j++) {
+		for (int k = 0; k < radius*2; k++) {
+			if ((j - radius) * (j - radius) + (k - radius) * (k - radius) < radius * radius) {
+				fb_ptr[(j) * (framebuffer->pitch / 4) + k] = 0xffffff;
+			}
+		}
+	}
 
     // We're done, just hang...
     hcf();

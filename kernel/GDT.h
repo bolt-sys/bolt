@@ -18,7 +18,7 @@ typedef struct GlobalDescriptorTable
 typedef struct GlobalDescriptorTablePointer
 {
 	unsigned short	limit;
-	unsigned int	base;
+	void* 			base;
 } __attribute__((packed)) GDT_PTR;
 
 extern GDT gdt[6];

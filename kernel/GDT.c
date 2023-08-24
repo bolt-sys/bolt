@@ -23,21 +23,23 @@ void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned cha
 
 void gdt_flush()
 {
-	asm volatile("lgdt %0" : : "m" (gdt_ptr));
-	asm volatile("mov $0x10, %ax");
-	asm volatile("mov %ax, %ds");
-	asm volatile("mov %ax, %es");
-	asm volatile("mov %ax, %fs");
-	asm volatile("mov %ax, %gs");
-	asm volatile("mov %ax, %ss");
-	asm volatile("ljmp $0x08, $.1");
-	asm volatile(".1:");
+	asm volatile("lgdt %0\n\t"
+				 "mov $0x10, %%ax\n\t"
+				 "mov %%ax, %%ds\n\t"
+				 "mov %%ax, %%es\n\t"
+				 "mov %%ax, %%fs\n\t"
+				 "mov %%ax, %%gs\n\t"
+				 "mov %%ax, %%ss\n\t"
+				 "leaq 0x8(%%rsp), %%rsp\n\t"
+				 "jmp $.1(%%rsp)\n\t"
+				 ".1:\n\t"
+				 : : "m" (gdt_ptr)  );
 }
 
 void gdt_install()
 {
 	gdt_ptr.limit = (sizeof(GDT) * 3) - 1;
-	gdt_ptr.base = (unsigned int)&gdt;
+	gdt_ptr.base = &gdt;
 
 	gdt_set_gate(0, 0, 0, 0, 0);                // Null segment
 	gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment

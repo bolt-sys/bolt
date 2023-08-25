@@ -3,11 +3,11 @@
 //
 
 #include "GDT.h"
+#include "TSS.h"
+#include "MemoryUtils.h"
 
-GDT gdt[6];
+GDT gdt[3];
 GDT_PTR gdt_ptr;
-
-extern void gdt_flush(void);
 
 void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
 {
@@ -24,14 +24,17 @@ void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned cha
 
 void gdt_install()
 {
-    gdt_ptr.limit = (sizeof(GDT) * 3) - 1;
+    gdt_ptr.limit = (sizeof(GDT) * 6) - 1;
     gdt_ptr.base = &gdt;
+	memset(&gdt, 0, sizeof(GDT) * 6);
 
     gdt_set_gate(0, 0, 0, 0, 0);                // Null segment
     gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); // Data segment
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
+	tss_install(5, 0x10, 0x0);
 
-    gdt_flush();
+	gdt_flush();
+	tss_flush();
 }

@@ -1,5 +1,6 @@
 [BITS 64]
 global gdt_flush
+extern gdt_ptr
 
 gdt_flush:
     ; Reload CS register:
@@ -15,4 +16,11 @@ gdt_flush:
     mov   FS, AX
     mov   GS, AX
     mov   SS, AX
+    ret
+
+global tss_flush
+
+tss_flush:
+    mov   AX, 0x28 ; 0x28 is a stand-in for your TSS segment
+    ltr   AX
     ret

@@ -4,24 +4,57 @@
 
 #ifndef BOLT_GDT_H
 #define BOLT_GDT_H
+#include "limine.h"
 
 typedef struct GlobalDescriptorTable
 {
-    unsigned short	limit_low;
-    unsigned short	base_low;
-    unsigned char	base_middle;
-    unsigned char	access;
-    unsigned char	granularity;
-    unsigned char	base_high;
+	uint16_t	limit_low;
+	uint16_t 	base_low;
+	uint8_t 	base_middle;
+	uint8_t 	access;
+	uint8_t 	granularity;
+	uint8_t 	base_high;
 } __attribute__((packed)) GDT;
 
 typedef struct GlobalDescriptorTablePointer
 {
     unsigned short	limit;
-    void* 			base;
+    GDT* 			base;
 } __attribute__((packed)) GDT_PTR;
 
-extern GDT gdt[6];
+// TODO: Implement
+typedef enum GlobalDescriptorTableDescriptor
+{
+	CODE_READABLE 			= 0x02,
+	DATA_WRITABLE 			= 0x02,
+
+	CODE_CONFORMING 		= 0x04,
+	DATA_DIRECTION_NORMAL 	= 0x00,
+	DATA_DIRECTION_DOWN 	= 0x04,
+
+	DATA_SEGMENT 			= 0x10,
+	CODE_SEGMENT 			= 0x18,
+	DESCRIPTOR_TSS 			= 0x00,
+
+	RING0 					= 0x00,
+	RING1 					= 0x20,
+	RING2 					= 0x40,
+	RING3 					= 0x60,
+
+	PRESENT 				= 0x80,
+} GDT_ACCESS;
+
+typedef enum GlobalDescriptorTableFlag
+{
+	BIT64_SEGMENT 			= 0x20,
+	BIT32_SEGMENT 			= 0x40,
+	BIT16_SEGMENT 			= 0x00,
+
+	GRANULARITY_1B 			= 0x00,
+	GRANULARITY_4KB 		= 0x80,
+} GDT_FLAG;
+
+extern GDT gdt[3];
 extern GDT_PTR gdt_ptr;
 
 extern void gdt_flush(void);

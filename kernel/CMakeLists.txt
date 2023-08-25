@@ -34,7 +34,9 @@ add_executable(kernel
         source/kernel.c
         source/GDT.c
         source/ITR.c
+        source/TSS.c
         source/fuck_me_daddy.asm
+        source/MemoryUtils.h
 )
 
 target_link_options(kernel PRIVATE ${LINKER_OPTIONS})

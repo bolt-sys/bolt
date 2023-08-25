@@ -30,18 +30,14 @@ set(LINKER_OPTIONS
         "-T${LINKER_SCRIPT}"
 )
 
-add_executable(kernel
-        source/kernel.c
-        source/GDT.c
-        source/ITR.c
-        source/fuck_me_daddy.asm
-        source/MemoryUtils.h
-)
+file(GLOB_RECURSE KERNEL_SOURCES "*.c" "*.h" "*.asm")
+
+add_executable(kernel ${KERNEL_SOURCES})
 
 target_link_options(kernel PRIVATE ${LINKER_OPTIONS})
 target_compile_options(kernel PRIVATE $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}> $<$<COMPILE_LANGUAGE:ASM_NASM>:${ASM_OPTIONS}>)
-target_include_directories(kernel PRIVATE include)
+target_include_directories(kernel PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include ${CMAKE_CURRENT_LIST_DIR}/source)
 
 set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 
-target_link_libraries(kernel PRIVATE limine)
+target_link_libraries(kernel PRIVATE limine klibc)

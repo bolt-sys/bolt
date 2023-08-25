@@ -6,3 +6,4 @@ project(bolt
 
 add_subdirectory(external)
 add_subdirectory(kernel)
+add_subdirectory(klibc)

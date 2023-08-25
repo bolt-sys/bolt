@@ -5,7 +5,7 @@
 #ifndef BOLT_ISR_H
 #define BOLT_ISR_H
 
-#include <stdint.h>
+#include "stdint.h"
 #include "IDT.h"
 
 typedef struct

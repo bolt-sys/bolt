@@ -115,7 +115,7 @@ char *strlcpy(char* dest, const char *src, size_t n);
  * @return Returns 1 if all characters are lowercase, 0 otherwise.
  * @note The input string should be null-terminated. The check is case-sensitive.
  */
-int str_is_lowercase(char *c);
+int str_is_lowercase(const char *c);
 
 /**
  * @brief Checks if the string consists only of uppercase letters.
@@ -123,7 +123,7 @@ int str_is_lowercase(char *c);
  * @return Returns 1 if all characters are uppercase, 0 otherwise.
  * @note The input string should be null-terminated. The check is case-sensitive.
  */
-int str_is_uppercase(char *c);
+int str_is_uppercase(const char *c);
 
 /**
  * @brief Checks if the string consists only of numeric characters.
@@ -131,7 +131,7 @@ int str_is_uppercase(char *c);
  * @return Returns 1 if all characters are numeric, 0 otherwise.
  * @note The input string should be null-terminated.
  */
-int str_is_numeric(char *c);
+int str_is_numeric(const char *c);
 
 /**
  * @brief Converts a string to an uppercase string.

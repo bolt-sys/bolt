@@ -19,7 +19,7 @@ typedef struct GlobalDescriptorTable
 typedef struct GlobalDescriptorTablePointer
 {
     unsigned short	limit;
-    GDT* 			base;
+	uint64_t 		base;
 } __attribute__((packed)) GDT_PTR;
 
 // TODO: Implement
@@ -54,10 +54,10 @@ typedef enum GlobalDescriptorTableFlag
 	GRANULARITY_4KB 		= 0x80,
 } GDT_FLAG;
 
-extern GDT gdt[3];
+extern GDT gdt[6];
 extern GDT_PTR gdt_ptr;
 
-extern void gdt_flush(void);
+extern void gdt_flush(GDT_PTR* gdt_ptr);
 
 /**
  * \brief Sets a new descriptor in the Global Descriptor Table (GDT)

@@ -32,9 +32,7 @@ set(LINKER_OPTIONS
 
 file(GLOB_RECURSE KERNEL_SOURCES "*.c" "*.h" "*.asm")
 
-add_executable(kernel ${KERNEL_SOURCES}
-        source/mem/bump_allocator.h
-        source/mem/bump_allocator.c)
+add_executable(kernel ${KERNEL_SOURCES})
 
 target_link_options(kernel PRIVATE ${LINKER_OPTIONS})
 target_compile_options(kernel PRIVATE $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}> $<$<COMPILE_LANGUAGE:ASM_NASM>:${ASM_OPTIONS}>)

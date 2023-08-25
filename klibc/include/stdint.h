@@ -1,5 +1,9 @@
-#ifndef __STDINT_H
-#define __STDINT_H
+//
+// Created by Robin Alexander Plate on 8/25/23.
+//
+
+#ifndef BOLT_KLIBC_STDINT_H_
+#define BOLT_KLIBC_STDINT_H_
 
 typedef __UINT8_TYPE__ uint8_t;
 typedef __UINT16_TYPE__ uint16_t;

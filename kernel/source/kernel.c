@@ -2,6 +2,7 @@
 #include <limine.h>
 
 #include "x86_64/gdt.h"
+#include "mem/bump_allocator.h"
 
 // The Limine requests can be placed anywhere, but it is important that
 // the compiler does not optimise them away, so, usually, they should
@@ -18,6 +19,33 @@ static void hcf(void) {
   }
 }
 
+BumpAllocator g_Allocator;
+
+// TODO: move this to a better place.
+void outb(uint16_t port, uint8_t value) {
+  asm volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
+}
+
+void inb(uint16_t port, uint8_t *value) {
+  asm volatile ("inb %1, %0" : "=a"(*value) : "Nd"(port));
+}
+
+void putc(char c) {
+  // Check if the serial port is ready to send data.
+  uint8_t status;
+  do {
+	inb(0x3fd, &status);
+  } while ((status & 0x20) == 0);
+
+  outb(0x3f8, c);
+}
+
+void puts(const char *str) {
+  for (size_t i = 0; str[i] != '\0'; i++) {
+	putc(str[i]);
+  }
+}
+
 // The following will be our kernel's entry point.
 // If renaming _start() to something else, make sure to change the
 // linker script accordingly.
@@ -28,6 +56,23 @@ void _start(void) {
   }
 
   load_gdt();
+
+  puts("Hello, world!\n");
+
+  // Initialize the bump allocator.
+  BumpAllocator_init(&g_Allocator);
+
+  // Test allocation.
+  void *ptr = BumpAllocator_alloc(&g_Allocator, 0x1000);
+  if (ptr == NULL) {
+	puts("Allocation failed!\n");
+	hcf();
+  }
+
+  *(char*)ptr = 'a';
+  puts("Allocation succeeded! Value: ");
+  putc(*(char*)ptr);
+  puts("\n");
 
   // Fetch the first framebuffer.
   struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];

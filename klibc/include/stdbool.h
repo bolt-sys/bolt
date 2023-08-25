@@ -1,9 +1,12 @@
-#ifndef __STDBOOL_H
-#define __STDBOOL_H
+//
+// Created by Robin Alexander Plate on 8/25/23.
+//
+
+#ifndef BOLT_KLIBC_STDBOOL_H_
+#define BOLT_KLIBC_STDBOOL_H_
 
 #define bool _Bool
 #define true 1
 #define false 0
-#define __bool_true_false_are_defined 1
 
-#endif
+#endif // BOLT_KLIBC_STDBOOL_H_

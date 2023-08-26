@@ -17,6 +17,7 @@ set(C_OPTIONS
 set(ASM_OPTIONS
     "-Fdwarf"
     "-g"
+    "-i${CMAKE_CURRENT_LIST_DIR}/source/x86_64"
 )
 
 set(LINKER_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/linker.ld")

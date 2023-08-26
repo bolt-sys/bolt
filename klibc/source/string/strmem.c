@@ -2,6 +2,7 @@
 // Created by Emil Glenn Karpawitz on 8/26/23.
 //
 #include <string.h>
+#include "stdlib.h"
 
 char *strcpy(char *dest, const char *src)
 {
@@ -31,6 +32,7 @@ char *strlcpy(char *dest, const char *src, size_t count)
 char *strcat(char *dest, const char *src)
 {
 	strcpy(dest + strlen(dest), src);
+	int i = 0;
 	return dest;
 }
 
@@ -40,13 +42,11 @@ char *strncat(char *dest, const char *src, size_t count)
 	return dest;
 }
 
-// TODO: add malloc
 char *strdup(const char *src)
 {
-//	size_t len = strlen(src);
-//	char *dest = malloc(len + 1);
+	size_t len = strlen(src);
+	char *dest = malloc(len + 1);
 
-//	memcpy(dest, src, len + 1);
-//	return dest;
-	return NULL;
+	memcpy(dest, src, len + 1);
+	return dest;
 }

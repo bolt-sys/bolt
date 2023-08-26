@@ -3,3 +3,8 @@
 //
 
 #include "isr.h"
+
+void isr_handler(registers *r)
+{
+	// Fuck my life
+}

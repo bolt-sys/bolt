@@ -27,7 +27,7 @@ typedef struct BumpAllocator {
  *       the systems memory, and it will not be able to allocate any more
  *       memory for itself.
  */
-void BumpAllocator_init(BumpAllocator *allocator);
+void BumpAllocator_init();
 
 /**
  * @brief Allocate memory from a bump allocator
@@ -35,6 +35,6 @@ void BumpAllocator_init(BumpAllocator *allocator);
  * @param size The size of the allocation
  * @return The address of the allocation, or 0 if no memory is available
  */
-void *BumpAllocator_alloc(BumpAllocator *allocator, size_t size);
+void *BumpAllocator_alloc(size_t size);
 
 #endif //BOLT_KERNEL_SOURCE_MEM_BUMP_ALLOCATOR_H_

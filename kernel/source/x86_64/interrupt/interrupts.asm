@@ -1,6 +1,8 @@
 [BITS 64]
 
 extern isr_handler
+extern idt_set_entry
+%include "misc.inc"
 
 ; Push geral purpose registers
 ; Usage: push_gpr
@@ -47,13 +49,23 @@ isr_handler_wrapper:
     push_gpr
 
     ; Calls the c handler
-    mov rax, rsp
+    mov rdi, rsp
     call isr_handler
 
     pop_gpr
     pop rbp
     add rsp, 8
     iretq
+
+%macro idt_set 1
+    push rdi
+    push rsi
+    mov rdi, %1
+    mov rsi, isr%1
+    call idt_set_entry
+    pop rsi
+    pop rdi
+%endmacro
 
 ; ISR Macro
 ; Usage: isr <number>
@@ -72,3 +84,10 @@ isr_handler_wrapper:
     %assign i i+1
 %endrep
 
+beg_func idt_init
+    %assign i 0
+    %rep 256
+        idt_set i
+        %assign i i+1
+    %endrep
+end_func

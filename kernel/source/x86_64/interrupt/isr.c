@@ -4,7 +4,9 @@
 
 #include "isr.h"
 
+extern void puts(char *s);
+
 void isr_handler(registers *r)
 {
-	// Fuck my life
+	puts("recieved interrupt: ");
 }

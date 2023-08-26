@@ -25,6 +25,12 @@ typedef struct InterruptDescriptorTable64Pointer
 	uint64_t 	base;            // virtual address of IDT
 } __attribute__((packed)) IDT64_PTR;
 
+typedef enum {
+	//						    P(1) DPL(2) 0(1) GATE_TYPE(4)
+	INTERRUPT_GATE 			= 0b10001110,
+	TRAP_GATE 				= 0b10001111,
+} IDT_TYPE;
+
 
 extern IDT64 idt64[256];
 
@@ -32,6 +38,10 @@ extern IDT64_PTR idt64_ptr;
 
 void load_idt64();
 
-void idt_set_gate(int n, uint64_t handler);
+void idt_set_entry(int n, uint64_t handler);
+
+void stop_interrupts();
+
+void start_interrupts();
 
 #endif //BOLT_IDT_H

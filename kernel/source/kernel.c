@@ -20,29 +20,14 @@ static void hcf(void) {
   }
 }
 
-// TODO: move this to a better place.
-void outb(uint16_t port, uint8_t value) {
-  asm volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
-}
-
-void inb(uint16_t port, uint8_t *value) {
-  asm volatile ("inb %1, %0" : "=a"(*value) : "Nd"(port));
-}
-
-void putc(char c) {
-  // Check if the serial port is ready to send data.
-  uint8_t status;
-  do {
-	inb(0x3fd, &status);
-  } while ((status & 0x20) == 0);
-
-  outb(0x3f8, c);
-}
+#include "x86_64/io.h"
+#include <string.h>
 
 void puts(const char *str) {
-  for (size_t i = 0; str[i] != '\0'; i++) {
-	putc(str[i]);
-  }
+  io_wait(0x3f8 + 5);
+
+  size_t s = strlen(str);
+  outsb(0x3f8, str, s);
 }
 
 // The following will be our kernel's entry point.
@@ -55,19 +40,9 @@ void _start(void) {
   }
 
   load_gdt();
-
-  puts("Hello, world!\n");
-
-  // Initialize the bump allocator.
   BumpAllocator_init();
 
-  char *ptr = malloc(1);
-  *ptr = 'a';
-  puts("Allocation succeeded! Value: ");
-  putc(*(char*)ptr);
-  puts("\n");
-
-  realloc(ptr, 2);
+  puts("Hello, world!\n");
 
   // Fetch the first framebuffer.
   struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];

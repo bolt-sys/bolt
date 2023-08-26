@@ -5,14 +5,17 @@
 #include "bump_allocator.h"
 
 #include <string.h>
+#include <stdbool.h>
 #include <limine.h>
 
 static volatile struct limine_memmap_request
 	memmap_request = {.id = LIMINE_MEMMAP_REQUEST, .revision = 0};
 
+static BumpAllocator g_BumpAllocator;
+static bool g_BumpAllocator_initialized = false;
+
 /**
  * @brief Initialize a bump allocator
- * @param allocator The allocator to initialize
  * @note This function must only be called ONCE!!!
  *       do not call it again, even if you create a new allocator.
  *
@@ -20,8 +23,12 @@ static volatile struct limine_memmap_request
  *       the systems memory, and it will not be able to allocate any more
  *       memory for itself.
  */
-void BumpAllocator_init(BumpAllocator *allocator) {
-  memset(allocator, 0, sizeof(BumpAllocator));
+void BumpAllocator_init() {
+  if (g_BumpAllocator_initialized) {
+	return;
+  }
+
+  memset(&g_BumpAllocator, 0, sizeof(BumpAllocator));
 
   int bumpers = 0;
 
@@ -31,14 +38,16 @@ void BumpAllocator_init(BumpAllocator *allocator) {
 	  continue;
 	}
 
-	allocator->bumpers[bumpers].heap_start = entry->base;
-	allocator->bumpers[bumpers++].heap_end = entry->base + entry->length;
+	g_BumpAllocator.bumpers[bumpers].heap_start = entry->base;
+	g_BumpAllocator.bumpers[bumpers++].heap_end = entry->base + entry->length;
 
 	if (bumpers >= 512) {
 	  // TODO: raise error
 	  break; // TOO MANY BUMPERS!
 	}
   }
+
+  g_BumpAllocator_initialized = true;
 }
 
 /**
@@ -47,8 +56,12 @@ void BumpAllocator_init(BumpAllocator *allocator) {
  * @param size The size of the allocation
  * @return The address of the allocation, or 0 if no memory is available
  */
-void *BumpAllocator_alloc(BumpAllocator *allocator, size_t size) {
-  for (Bumper *bumper = allocator->bumpers; bumper->heap_start != 0; bumper++) {
+void *BumpAllocator_alloc(size_t size) {
+  if (!g_BumpAllocator_initialized) {
+	return NULL;
+  }
+
+  for (Bumper *bumper = g_BumpAllocator.bumpers; bumper->heap_start != 0; bumper++) {
 	if (bumper->next + size <= bumper->heap_end) {
 	  void *ptr = (void *)bumper->next + bumper->heap_start;
 	  bumper->next += size;

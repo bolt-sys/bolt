@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <limine.h>
+#include <stdlib.h>
 
 #include "x86_64/gdt.h"
 #include "mem/bump_allocator.h"
@@ -18,8 +19,6 @@ static void hcf(void) {
 	asm ("hlt");
   }
 }
-
-BumpAllocator g_Allocator;
 
 // TODO: move this to a better place.
 void outb(uint16_t port, uint8_t value) {
@@ -60,19 +59,15 @@ void _start(void) {
   puts("Hello, world!\n");
 
   // Initialize the bump allocator.
-  BumpAllocator_init(&g_Allocator);
+  BumpAllocator_init();
 
-  // Test allocation.
-  void *ptr = BumpAllocator_alloc(&g_Allocator, 0x1000);
-  if (ptr == NULL) {
-	puts("Allocation failed!\n");
-	hcf();
-  }
-
-  *(char*)ptr = 'a';
+  char *ptr = malloc(1);
+  *ptr = 'a';
   puts("Allocation succeeded! Value: ");
   putc(*(char*)ptr);
   puts("\n");
+
+  realloc(ptr, 2);
 
   // Fetch the first framebuffer.
   struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];

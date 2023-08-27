@@ -7,14 +7,16 @@
 
 #include <stddef.h>
 
-typedef struct Bumper {
-  size_t heap_start;
-  size_t heap_end;
-  size_t next;
+typedef struct Bumper
+{
+	size_t heap_start;
+	size_t heap_end;
+	size_t next;
 } Bumper;
 
-typedef struct BumpAllocator {
-  Bumper bumpers [512];
+typedef struct BumpAllocator
+{
+	Bumper bumpers[512];
 } BumpAllocator;
 
 /**
@@ -35,6 +37,6 @@ void BumpAllocator_init();
  * @param size The size of the allocation
  * @return The address of the allocation, or 0 if no memory is available
  */
-void *BumpAllocator_alloc(size_t size);
+void* BumpAllocator_alloc(size_t size);
 
 #endif //BOLT_KERNEL_SOURCE_MEM_BUMP_ALLOCATOR_H_

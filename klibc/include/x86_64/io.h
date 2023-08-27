@@ -5,7 +5,7 @@
 #ifndef BOLT_KERNEL_SOURCE_X86_64_IO_H_
 #define BOLT_KERNEL_SOURCE_X86_64_IO_H_
 
-#include <stdint.h>
+#include "stdint.h"
 
 extern void outb(uint16_t port, uint8_t value);
 extern void outw(uint16_t port, uint16_t value);

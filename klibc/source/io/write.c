@@ -4,7 +4,7 @@
 #include "unistd.h"
 #include "x86_64/io.h"
 
-static unsigned short fd_0 = 0x3f8; /* FD 0 */
+static const unsigned short fd_0 = 0x3f8; /* FD 0 */
 
 void write(int fd, const char *buf, size_t count)
 {

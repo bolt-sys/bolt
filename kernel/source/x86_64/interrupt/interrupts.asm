@@ -7,6 +7,7 @@ extern idt_set_entry
 ; Push geral purpose registers
 ; Usage: push_gpr
 %macro push_gpr 0
+    ; Pushes all general purpose registers
     push rax
     push rbx
     push rcx
@@ -26,6 +27,7 @@ extern idt_set_entry
 ; Pop geral purpose registers
 ; Usage: pop_gpr
 %macro pop_gpr 0
+    ; Pops all general purpose registers
     pop r15
     pop r14
     pop r13
@@ -44,17 +46,18 @@ extern idt_set_entry
 
 
 isr_handler_wrapper:
-    push rbp
-    mov rbp, rsp
     push_gpr
 
     ; Calls the c handler
     mov rdi, rsp
     call isr_handler
 
+    ; Clean up the stack
+    add rsp, 8 * 22
+
     pop_gpr
-    pop rbp
     add rsp, 8
+    sti
     iretq
 
 %macro idt_set 1
@@ -71,6 +74,7 @@ isr_handler_wrapper:
 ; Usage: isr <number>
 %macro isr 1
     isr%1:
+        cli
         push 0
         push %1
         jmp isr_handler_wrapper

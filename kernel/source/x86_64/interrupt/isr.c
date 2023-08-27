@@ -6,7 +6,29 @@
 
 extern void puts(char *s);
 
+static void putc(char c)
+{
+	puts(&c);
+}
+
+static void putnbr(uint64_t n)
+{
+	if (n < 0)
+	{
+		puts("-");
+		n = -n;
+	}
+	if (n > 9)
+	{
+		putnbr(n / 10);
+	}
+	putc(n % 10 + '0');
+}
+
 void isr_handler(registers *r)
 {
-	puts("recieved interrupt: ");
+	puts("Interrupt: ");
+	putnbr(r->int_no);
+	puts("\n");
+
 }

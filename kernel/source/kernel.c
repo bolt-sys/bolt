@@ -23,14 +23,31 @@ static void hcf(void)
 
 #include "x86_64/io.h"
 #include "x86_64/interrupt/idt.h"
+#include "stdarg.h"
 #include <string.h>
 
 void puts(const char *str)
 {
-	io_wait(0x3f8 + 5);
 
 	size_t s = strlen(str);
 	outsb(0x3f8, str, s);
+}
+
+int test(int n, ...)
+{
+	int rtn = 0;
+	va_list ap;
+	va_start(ap, n);
+	for (int i = 0; i < n; i++) {
+		rtn += va_arg(ap, int);
+	}
+	va_end(ap);
+	return rtn;
+}
+
+void lool(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, ...)
+{
+	puts("lool\n");
 }
 
 // The following will be our kernel's entry point.
@@ -47,7 +64,9 @@ void _start(void)
 	load_idt64();
 	BumpAllocator_init();
 
-	puts("Hello, world!\n");
+	int a = test(3, 1, 2, 3);
+	if (a != 6)
+		puts("test failed\n");
 
 	// Fetch the first framebuffer.
 	struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];

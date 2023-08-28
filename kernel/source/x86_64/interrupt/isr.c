@@ -4,6 +4,41 @@
 
 #include "isr.h"
 
+static const char* interrupt[] = {
+	"Divide by zero",
+	"Debug",
+	"Non maskable interrupt",
+	"Breakpoint",
+	"Overflow",
+	"Bound range exceeded",
+	"Invalid opcode",
+	"Device not available",
+	"Double fault HOW TF DID YOU GET HERE",
+	"Coprocessor segment overrun",
+	"Invalid TSS",
+	"Segment not present",
+	"Stack segment fault",
+	"General protection fault",
+	"Page fault",
+	"Reserved",
+	"x87 floating point exception",
+	"Alignment check",
+	"Machine check",
+	"SIMD floating point exception",
+	"Virtualization exception",
+	"Control protection exception",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved"
+};
+
 extern void puts(char* s);
 
 static void putc(char c)
@@ -27,6 +62,11 @@ static void putnbr(uint64_t n)
 void isr_handler(registers* r)
 {
 	puts("Interrupt: ");
-	putnbr(r->int_no);
-	puts("\n");
+	if (r->int_no < 32) {
+		puts(interrupt[r->int_no]);
+	}
+	else {
+		putnbr(r->int_no);
+	}
+	puts(" received\n");
 }

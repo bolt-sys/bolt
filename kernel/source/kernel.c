@@ -26,7 +26,7 @@ static void hcf(void)
 #include "stdarg.h"
 #include <string.h>
 
-void puts(const char *str)
+void puts(const char* str)
 {
 
 	size_t s = strlen(str);
@@ -65,10 +65,10 @@ void _start(void)
 	BumpAllocator_init();
 
 	// Fetch the first framebuffer.
-	struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
+	struct limine_framebuffer* framebuffer = framebuffer_request.response->framebuffers[0];
 
 	// Note: we assume the framebuffer model is RGB with 32-bit pixels.
-	uint32_t *fb_ptr = framebuffer->address;
+	uint32_t* fb_ptr = framebuffer->address;
 
 	const int radius = 70;
 

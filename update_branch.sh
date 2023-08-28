@@ -11,6 +11,7 @@ then
     git checkout $MAIN_BRANCH
     git merge $BRANCH
     git push origin $MAIN_BRANCH
+    git checkout $BRANCH
     exit 1
 fi
 git checkout $MAIN_BRANCH

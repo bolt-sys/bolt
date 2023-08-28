@@ -4,7 +4,7 @@
 
 #include "isr.h"
 
-extern void puts(char *s);
+extern void puts(char* s);
 
 static void putc(char c)
 {
@@ -13,20 +13,18 @@ static void putc(char c)
 
 static void putnbr(uint64_t n)
 {
-	if (n < 0)
-	{
+	if (n < 0) {
 		puts("-");
 		n = -n;
 	}
-	if (n > 9)
-	{
+	if (n > 9) {
 		putnbr(n / 10);
 	}
 	char c = n % 10 + '0';
 	putc(c);
 }
 
-void isr_handler(registers *r)
+void isr_handler(registers* r)
 {
 	puts("Interrupt: ");
 	putnbr(r->int_no);

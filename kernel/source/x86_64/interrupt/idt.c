@@ -44,8 +44,8 @@ uint8_t types[32] = {
 };
 
 IDT64_PTR idt64_ptr = (IDT64_PTR){
-		.limit = sizeof(idt64) - 1,
-		.base = (uint64_t) idt64
+	.limit = sizeof(idt64) - 1,
+	.base = (uint64_t) idt64
 };
 
 void load_idt64(void)
@@ -64,13 +64,13 @@ void load_idt64(void)
 void idt_set_entry(int n, uint64_t handler)
 {
 	idt64[n] = (IDT64){
-			.offset_1 = handler & 0xFFFF,
-			.selector = 0x08,
-			.ist = 0,
-			.type_attributes = n < 32? types[n] : INTERRUPT_GATE,
-			.offset_2 = (handler >> 16) & 0xFFFF,
-			.offset_3 = (handler >> 32) & 0xFFFFFFFF,
-			._ = 0
+		.offset_1 = handler & 0xFFFF,
+		.selector = 0x08,
+		.ist = 0,
+		.type_attributes = n < 32 ? types[n] : INTERRUPT_GATE,
+		.offset_2 = (handler >> 16) & 0xFFFF,
+		.offset_3 = (handler >> 32) & 0xFFFFFFFF,
+		._ = 0
 	};
 }
 

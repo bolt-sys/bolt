@@ -17,6 +17,6 @@ typedef struct
 	uint64_t rip, cs, rflags, rsp, ss;
 } __attribute__((packed)) registers;
 
-void isr_handler(registers *r);
+void isr_handler(registers* r);
 
 #endif //BOLT_ISR_H

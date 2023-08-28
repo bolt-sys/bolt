@@ -22,7 +22,8 @@ static void putnbr(uint64_t n)
 	{
 		putnbr(n / 10);
 	}
-	putc(n % 10 + '0');
+	char c = n % 10 + '0';
+	putc(c);
 }
 
 void isr_handler(registers *r)
@@ -30,5 +31,4 @@ void isr_handler(registers *r)
 	puts("Interrupt: ");
 	putnbr(r->int_no);
 	puts("\n");
-
 }

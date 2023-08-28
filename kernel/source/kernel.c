@@ -64,10 +64,6 @@ void _start(void)
 	load_idt64();
 	BumpAllocator_init();
 
-	int a = test(3, 1, 2, 3);
-	if (a != 6)
-		puts("test failed\n");
-
 	// Fetch the first framebuffer.
 	struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
 

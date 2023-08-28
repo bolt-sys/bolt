@@ -45,7 +45,7 @@ uint8_t types[32] = {
 
 IDT64_PTR idt64_ptr = (IDT64_PTR){
 		.limit = sizeof(idt64) - 1,
-		.base = (uint64_t) &idt64
+		.base = (uint64_t) idt64
 };
 
 void load_idt64(void)
@@ -54,6 +54,10 @@ void load_idt64(void)
 	idt_init();
 	asm volatile("lidt %0" : : "m"(idt64_ptr));
 	start_interrupts();
+	/*
+	void (*test)(void) = (void (*)(void))(((uint64_t)idt64[5].offset_3 << 32) | ((uint64_t)idt64[5].offset_2 << 16)
+		| idt64[5].offset_1);
+	test();*/
 }
 
 // TODO add diffrent types of gates? not sure if needed

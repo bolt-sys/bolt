@@ -64,6 +64,12 @@ void _start(void)
 	load_idt64();
 	BumpAllocator_init();
 
+	puts("Hello World!");
+
+	int a = test(3, 1, 2, 3);
+	if (a != 6)
+		puts("test failed\n");
+
 	// Fetch the first framebuffer.
 	struct limine_framebuffer* framebuffer = framebuffer_request.response->framebuffers[0];
 
@@ -71,6 +77,8 @@ void _start(void)
 	uint32_t* fb_ptr = framebuffer->address;
 
 	const int radius = 70;
+
+	asm volatile ( "int $0x01" );
 
 	for (int j = 0; j < radius * 2; j++) {
 		for (int k = 0; k < radius * 2; k++) {

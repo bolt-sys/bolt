@@ -11,7 +11,8 @@ function build-iso() {
   make -C external/limine -j"$(nproc)"
 
   pushd build
-    ninja -C cmake
+    #ninja -C cmake
+    ls ../
     cp -v cmake/kernel/kernel ../limine.cfg ../external/limine/limine-bios.sys ../external/limine/limine-bios-cd.bin ../external/limine/limine-uefi-cd.bin iso_root/
 
     mkdir -p iso_root/EFI/BOOT

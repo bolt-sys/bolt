@@ -3,7 +3,7 @@
 //
 #include <string.h>
 
-int	strlen(const char *s)
+long unsigned int	strlen(const char *s)
 {
 	int i;
 	for (i = 0; s[i]; ++i);

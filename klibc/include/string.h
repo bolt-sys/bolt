@@ -303,7 +303,7 @@ char *strncat(char *dest, const char *src, size_t n);
  *
  * @return This function returns the length of string.
  */
-int	 strlen(const char *s);
+long unsigned int	 strlen(const char *s);
 
 /**
  * @brief Converts the input string to its corresponding integer value.

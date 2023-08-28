@@ -69,6 +69,7 @@ void* realloc(void* ptr, size_t size)
 
 void free(void* ptr)
 {
+	(void)ptr;
 	// Not implemented in the bump allocator.
 	// so this is a no-op.
 }

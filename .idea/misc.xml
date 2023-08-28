@@ -3,11 +3,11 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <sourceRoots>
-      <file path="$PROJECT_DIR$/kernel" />
+      <file path="$PROJECT_DIR$/Kernel" />
       <file path="$PROJECT_DIR$/klibc" />
     </sourceRoots>
     <libraryRoots>
-      <file path="$PROJECT_DIR$/external" />
+      <file path="$PROJECT_DIR$/External" />
     </libraryRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/build" />

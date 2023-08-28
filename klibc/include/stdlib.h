@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-// Implemented in //kernel/source/mem/alloc.c
+// Implemented in //Kernel/source/mem/alloc.c
 
 void* malloc (size_t size);
 void* calloc (size_t num, size_t size);

@@ -47,25 +47,33 @@ extern idt_set_entry
 %endmacro
 
 isr_handler_wrapper:
-    ; push ds
-    xor rax, rax
-    mov ax, ds
-    push rax
     ; Push the stack
     push_gpr
 
+    ; push es/ds
+    xor rax, rax
+
+    mov ax, ds
+    push rax
+
+    mov ax, es
+    push rax
+
     ; Calls the c handler
     mov rdi, rsp
-    push rsp
     call isr_handler
-    add rsp, 4
 
-    ; Clean up the stack
+    ; Restore es/ds incase we swapped cpl
     pop rax
+    mov es, ax
+
+    pop rax
+    mov ds, ax
+
     pop_gpr
-    add rsp, 8
-    sti
-    iret
+
+    add rsp, 16 ; Adjust the stack
+    iretq
 
 %macro idt_set 1
     push rdi
@@ -82,6 +90,13 @@ isr_handler_wrapper:
 %macro isr 1
     isr%1:
         cli
+        %if %1 == 8 || %1 == 10 || %1 == 11 || %1 == 12 || %1 == 13 || %1 == 14 || %1 == 17 || %1 == 21
+            ; has error code
+        %else
+            ; Has no error code
+            push 0
+        %endif
+
         push %1
         jmp isr_handler_wrapper
 %endmacro

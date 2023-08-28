@@ -78,8 +78,6 @@ void _start(void)
 
 	const int radius = 70;
 
-	asm volatile ( "int $0x01" );
-
 	for (int j = 0; j < radius * 2; j++) {
 		for (int k = 0; k < radius * 2; k++) {
 			if ((j - radius) * (j - radius) + (k - radius) * (k - radius) < radius * radius) {

@@ -17,6 +17,6 @@ fi
 git checkout $MAIN_BRANCH
 git fetch -p origin
 git merge origin/$MAIN_BRANCH
-git checkout BRANCH
+git checkout $BRANCH
 git merge origin/$MAIN_BRANCH
-git push origin BRANCH
+git push origin $BRANCH

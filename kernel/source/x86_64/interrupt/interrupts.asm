@@ -73,6 +73,7 @@ isr_handler_wrapper:
     pop_gpr
 
     add rsp, 16 ; Adjust the stack
+    sti
     iretq
 
 %macro idt_set 1

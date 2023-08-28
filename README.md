@@ -1,45 +1,63 @@
-# Limine Bare Bones
+# Bolt
 
-This repository will show you how to set up a simple 64-bit x86_64 Long Mode higher half kernel using Limine.
+An experimental Linux Distribution.
 
-This project can be built using the host compiler on most Linux distros on x86_64, but it's recommended you set up an x86_64-elf [cross compiler](https://wiki.osdev.org/GCC_Cross-Compiler).
+## Getting Started
 
-It is also recommended to cross reference the contents of this repository with [the Limine Bare Bones](https://wiki.osdev.org/Limine_Bare_Bones) OSDev wiki page.
+a lot of documentation is missing, but the build process is pretty simple:
 
-## Where to go from here
+### Prerequisites
+* A working Linux system (tested on Arch Linux)
+* A working assembler (tested with nasm)
+* You need `libisoburn` for xorriso
+* Qemu for testing and running
+* Ninja for building
+### Installing
+1. Clone the repository
+2. Download the submodules `git submodule update --init --recursive`
+3. Create the buid directory `mkdir -p build/cmake`
+### Building
+1. Compile the bootloader with
+```bash
+   mkdir -p build/cmake && cd build/cmake
+    cmake ../.. -GNinja
+    ninja
+```
 
-You may be asking yourself: "what now?".  So here's a list of things you may want to do to get started working
-on your new kernel:
+### Running
 
-* Load an [IDT](https://wiki.osdev.org/Interrupt_Descriptor_Table) so that exceptions and interrupts can be handled.
-* Write a physical memory allocator, a good starting point is a bitmap allocator.
-* Write a virtual memory manager that can map, remap and unmap pages.
-* Begin parsing ACPI tables, the most important one is the MADT since it contains information about the APIC.
-* Start up the other CPUs. Limine provides a facility to make this less painful.
-* Set up an interrupt controller such as the APIC.
-* Configure a timer such as the Local APIC timer, the PIT, or the HPET.
-* Implement a scheduler to schedule threads in order make multitasking possible.
-* Design a virtual file system (VFS) and implement it. The traditional UNIX VFS works and saves headaches when porting software, but you can make your own thing too.
-* Implement a simple virtual file system like a memory-only tmpfs to avoid crippling the design of your VFS too much while implementing it alongside real storage filesystems.
-* Decide how to abstract devices. UNIX likes usually go for a `/dev` virtual filesystem containing device nodes and use `ioctl()` alongside standard FS calls to do operations on them.
-* Get a userland going by loading executables from your VFS and running them in ring 3. Set up a way to perform system calls.
-* Write a PCI driver.
-* Add support for a storage medium, the easiest and most common ones are AHCI and NVMe.
+    TODO
 
+## Contributing
 
-At this point you should have decided what kind of interface your OS is going to provide to programs running on it, a common design that a lot of hobby operating systems use is POSIX (which derives from the UNIX design), which has both pros and cons:
+    TODO
 
-Pros:
+## Screenshots
 
-* Easier to port existing software that already runs on UNIX like operating systems like Linux.
-* The basic parts of POSIX are fairly easy to implement.
-* Pretty safe and sound design which has stood the test of time for over 40 years.
+    We aren't there yet
 
-Cons:
+## License
 
-* Restricts you to use an already existing design.
-* POSIX may get complex and has a lot of legacy cruft that software might rely on.
+```
+MIT License
 
-Another point to consider is that a lot of software tends to depend on Linux or glibc specific features, but a portable C library like [mlibc](https://github.com/managarm/mlibc) can be used instead of implementing your own, as it provides good compatibility with POSIX/Linux software.
+Copyright (c) 2023 Robin Alexander Plate
+Copyright (c) 2023 Emil Glenn Karpawitz
 
-Other options, instead of implementing POSIX in your kernel, is to add a POSIX compatibility layer on top of your native design (with the large downside of complicating the design of your OS).
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.```

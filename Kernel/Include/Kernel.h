@@ -35,9 +35,9 @@ typedef struct {
  *
  * @return This function never returns.
  **/
-NORETURN
-SYSAPI
 VOID
+SYSAPI
+NORETURN
 KernelMain (
     KERNEL_PARAMETERS* Parameters
     );

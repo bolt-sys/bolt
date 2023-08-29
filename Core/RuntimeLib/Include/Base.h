@@ -24,6 +24,7 @@
 #define VOID          void
 #define CONST         const
 #define EXTERN        extern
+#define VOLATILE      volatile
 
 // ----------------------------------------------------------------- Attributes
 

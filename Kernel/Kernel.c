@@ -5,7 +5,7 @@
  * @brief The entry point of the Kernel.This function is the entry point for the Kernel.
  *
  * @param[in] Parameters A pointer to a KERNEL_PARAMETERS structure that contains the
- *                                           parameters passed to the Kernel by the setup routine.
+ *                       parameters passed to the Kernel by the setup routine.
  *
  * @return This function never returns.
  **/

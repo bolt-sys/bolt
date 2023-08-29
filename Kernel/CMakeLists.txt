@@ -46,7 +46,7 @@ add_executable(Kernel ${KERNEL_SOURCES})
 
 target_link_options(Kernel PRIVATE ${LINKER_OPTIONS})
 target_compile_options(Kernel PRIVATE $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}> $<$<COMPILE_LANGUAGE:ASM_NASM>:${ASM_OPTIONS}>)
-target_include_directories(Kernel PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Include)
+target_include_directories(Kernel PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Include ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/${BOLT_TARGET_ARCH})
 
 set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 

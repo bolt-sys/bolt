@@ -13,7 +13,7 @@ function build-iso() {
   pushd build
     #ninja -C cmake
     ls ../
-    cp -v cmake/kernel/Kernel ../limine.cfg ../External/limine/limine-bios.sys ../External/limine/limine-bios-cd.bin ../External/limine/limine-uefi-cd.bin iso_root/
+    cp -v cmake/Kernel/Kernel ../limine.cfg ../External/limine/limine-bios.sys ../External/limine/limine-bios-cd.bin ../External/limine/limine-uefi-cd.bin iso_root/
 
     mkdir -p iso_root/EFI/BOOT
     cp -v ../External/limine/BOOTX64.EFI iso_root/EFI/BOOT/

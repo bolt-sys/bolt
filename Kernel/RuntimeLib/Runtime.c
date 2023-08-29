@@ -15,7 +15,7 @@ STATIC volatile struct limine_kernel_file_request g_KernelFileRequest = { .id = 
 STATIC volatile struct limine_memmap_request      g_MemoryRequest     = { .id = LIMINE_MEMMAP_REQUEST, .revision = 0 };
 
 VOID
-_start (
+StartupRoutine (
     VOID
     )
 {

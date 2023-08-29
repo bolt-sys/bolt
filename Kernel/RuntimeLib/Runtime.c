@@ -5,7 +5,9 @@
 
 #include <limine.h>
 
+// TODO: make this architecture independent
 #include <X64/GDT.h>
+#include <X64/IDT.h>
 
 STATIC KERNEL_PARAMETERS                          g_Parameters;
 
@@ -30,9 +32,11 @@ _start (
     //
     // Initialize core Kernel functionality
     //
-    MemoryInit (&g_Parameters);
     GDTInit ();
+    IDTInit ();
 
+    MemoryInit (&g_Parameters);
+    
     //
     // Enter the Kernel
     //

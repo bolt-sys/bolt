@@ -28,7 +28,9 @@ HeapInit (
         goto Exit;
     }
 
-    for (UINTN i = 0; i < SLAB_ALLOCATORS; i++) {
+    // The first index is basically unused because it is not possible to allocate
+    // 0 bytes.
+    for (UINTN i = 1; i < SLAB_ALLOCATORS; i++) {
         UINTN Size = BIT (i);
 
         Status = CreateSlabCache (&g_Allocators[i], Size, 0, NULL, NULL);
@@ -73,8 +75,9 @@ Allocate (
     IN  UINTN  Size
     )
 {
-    STATUS Status;
-    UINTN  Index;
+    STATUS        Status;
+    UINTN         Index;
+    MEMORY_BLOCK* Block;
 
     Status = STATUS_SUCCESS;
 
@@ -103,7 +106,7 @@ Allocate (
         goto Exit;
     }
 
-    MEMORY_BLOCK* Block = *Address;
+    Block = *Address;
 
     Block->Cookie   = MEMORY_COOKIE;
     Block->Index    = Index;
@@ -134,8 +137,9 @@ Free (
     IN     UINTN  Flags
     )
 {
-    STATUS Status;
-    UINTN  Index;
+    STATUS        Status;
+    UINTN         Index;
+    MEMORY_BLOCK* Block;
 
     Status = STATUS_SUCCESS;
 
@@ -149,7 +153,7 @@ Free (
         goto Exit;
     }
 
-    MEMORY_BLOCK* Block = (MEMORY_BLOCK*)*Address - 1;
+    Block = (MEMORY_BLOCK*)*Address - 1;
 
     if (Block->Cookie != MEMORY_COOKIE) {
         Status = STATUS_NOT_FOUND;
@@ -163,6 +167,92 @@ Free (
     }
 
     *Address = NULL;
+
+Exit:
+    return Status;
+}
+
+/**
+ * @brief Reallocate Memory
+ *
+ * @param[in,out] Address The address of the allocated memory
+ * @param[in]     Flags   The flags for the reallocation
+ * @param[in]     Size    The new size of the allocation
+ *
+ * @note It is not guaranteed that the address will be the same after the reallocation
+ *       but data will be copied over to the new address.
+ *
+ * @return STATUS_SUCCESS              The reallocation was successful
+ * @return STATUS_INVALID_PARAMETER    Address is NULL
+ * @return STATUS_NOT_FOUND            The address was not found in the allocator
+ * @return STATUS_NOT_INITIALIZED      The Allocator is not initialized
+ * @return STATUS_OUT_OF_MEMORY        The reallocation failed
+ **/
+STATUS
+SYSAPI
+Reallocate (
+    IN OUT VOID** Address,
+    IN     UINTN  Flags,
+    IN     UINTN  Size
+    )
+{
+    STATUS        Status;
+    UINTN         Index;
+    VOID*         NewAddress;
+    MEMORY_BLOCK* Block;
+
+    Status = STATUS_SUCCESS;
+
+    if (!g_Heap_initialized) {
+        Status = STATUS_NOT_INITIALIZED;
+        goto Exit;
+    }
+
+    if (Address == NULL) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+
+    Block = (MEMORY_BLOCK*)*Address - 1;
+
+    if (Block->Cookie != MEMORY_COOKIE) {
+        Status = STATUS_NOT_FOUND;
+        goto Exit;
+    }
+
+    Index = 0;
+    while (BIT (Index) < (Size + sizeof (MEMORY_BLOCK))) {
+        Index++;
+    }
+
+    if (Index >= SLAB_ALLOCATORS) {
+        Status = STATUS_OUT_OF_MEMORY;
+        goto Exit;
+    }
+
+    if (Index == Block->Index) {
+        Block->Size = Size;
+        goto Exit;
+    }
+
+    NewAddress = NULL;
+
+    Status = Allocate (&NewAddress, Flags, Size);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+
+    Status = CopyMemory (NewAddress, Block->Size, *Address, Block->Size);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+
+    Status = Free (Address, Flags);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+
+    *Address = NewAddress;
 
 Exit:
     return Status;

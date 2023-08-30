@@ -316,3 +316,27 @@ Free (
     IN OUT VOID** Address,
     IN     UINTN  Flags
     );
+
+/**
+ * @brief Reallocate Memory
+ *
+ * @param[in,out] Address The address of the allocated memory
+ * @param[in]     Flags   The flags for the reallocation
+ * @param[in]     Size    The new size of the allocation
+ *
+ * @note It is not guaranteed that the address will be the same after the reallocation
+ *       but data will be copied over to the new address.
+ *
+ * @return STATUS_SUCCESS              The reallocation was successful
+ * @return STATUS_INVALID_PARAMETER    Address is NULL
+ * @return STATUS_NOT_FOUND            The address was not found in the allocator
+ * @return STATUS_NOT_INITIALIZED      The Allocator is not initialized
+ * @return STATUS_OUT_OF_MEMORY        The reallocation failed
+ **/
+STATUS
+SYSAPI
+Reallocate (
+    IN OUT VOID** Address,
+    IN     UINTN  Flags,
+    IN     UINTN  Size
+    );

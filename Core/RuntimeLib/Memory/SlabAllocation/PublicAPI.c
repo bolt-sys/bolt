@@ -123,7 +123,7 @@ Exit:
     return Status;
 }
 
-// ------------------------------------------------------------ Slab Allocation
+// ------------------------------------------------------------ Slab SlabAllocation
 
 /**
  * @brief Allocate an object from a slab cache

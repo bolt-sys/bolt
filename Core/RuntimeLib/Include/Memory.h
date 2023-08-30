@@ -64,7 +64,7 @@ ZeroMemory (
     IN UINTN Length
     );
 
-// ------------------------------------------------------------ Page Allocation
+// ------------------------------------------------------------ Page SlabAllocation
 
 #define PAGE_SIZE_4K 0x1000     // Base page size
 #define PAGE_SIZE_2M 0x200000   // Large page size
@@ -263,4 +263,56 @@ SlabFree (
     IN OUT VOID**      Object
     );
 
-// ------------------------------------------------- General Purpose Allocation
+// ------------------------------------------------- General Purpose SlabAllocation
+
+/**
+ * @brief Initialize the Heap
+ *
+ * @return STATUS_SUCCESS             The initialization was successful
+ * @return STATUS_ALREADY_INITIALIZED The Heap is already initialized
+ * @return STATUS_OUT_OF_MEMORY       The Heap could not be initialized
+ *                                    due to lack of memory
+ **/
+STATUS
+SYSAPI
+HeapInit (
+    VOID
+    );
+
+/**
+ * @brief Allocate Memory
+ *
+ * @param[out] Address The address of the allocated memory
+ * @param[in]  Flags   The flags for the allocation
+ * @param[in]  Size    The size of the allocation
+ *
+ * @return STATUS_SUCCESS             The allocation was successful
+ * @return STATUS_INVALID_PARAMETER   Address is NULL
+ * @return STATUS_OUT_OF_MEMORY       The allocation failed
+ * @return STATUS_NOT_INITIALIZED     The Allocator is not initialized
+ **/
+STATUS
+SYSAPI
+Allocate (
+    OUT VOID** Address,
+    IN  UINTN  Flags,
+    IN  UINTN  Size
+    );
+
+/**
+ * @brief Free Memory
+ *
+ * @param[in,out] Address The address of the allocated memory
+ * @param[in]     Flags   The flags for the free
+ *
+ * @return STATUS_SUCCESS              The free was successful
+ * @return STATUS_INVALID_PARAMETER    Address is NULL
+ * @return STATUS_NOT_FOUND            The address was not found in the allocator
+ * @return STATUS_NOT_INITIALIZED      The Allocator is not initialized
+ **/
+STATUS
+SYSAPI
+Free (
+    IN OUT VOID** Address,
+    IN     UINTN  Flags
+    );

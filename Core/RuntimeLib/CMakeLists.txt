@@ -11,14 +11,7 @@ set(C_OPTIONS
         "-fno-stack-protector"
         "-fno-stack-check"
 
-        # Cannot rely on LTO, it will break the code.
-        "-fno-lto"
-
-        # Position independent executable
-        "-fPIE"
-
-
-        # Disable features we cannot use, especially during initialisation.
+        # Disable features we cannot use, although we could enable them later.
         "-mno-80387"    # Disable FPU
         "-mno-mmx"      # Disable MMX
         "-mno-sse"      # Disable SSE
@@ -31,10 +24,10 @@ file(GLOB_RECURSE RTL_SOURCES "*.h" "*.c")
 add_library(RuntimeLib STATIC ${RTL_SOURCES})
 target_include_directories(RuntimeLib
         PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/Include
-        ${CMAKE_CURRENT_LIST_DIR}/Include/${BOLT_TARGET_ARCH}
+            ${CMAKE_CURRENT_LIST_DIR}/Include
+            ${CMAKE_CURRENT_LIST_DIR}/Include/${BOLT_TARGET_ARCH}
+        PRIVATE
+            ${CMAKE_CURRENT_LIST_DIR}
     )
 
-message(${BOLT_TARGET_ARCH})
-
-target_compile_options(RuntimeLib PUBLIC $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}>)
+target_compile_options(RuntimeLib PRIVATE $<$<COMPILE_LANGUAGE:C>:${C_OPTIONS}>)

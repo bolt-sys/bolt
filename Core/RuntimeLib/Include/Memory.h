@@ -146,10 +146,12 @@ typedef STATUS SYSAPI (* SLAB_DTOR)(
 
 typedef struct _SLAB {
     struct _SLAB*       Next;
+    struct _SLAB*       Prev;
     struct _SLAB_CACHE* Cache;
 
     CHAR8*              FreeMap;
     CHAR8*              FreeMapEnd;
+    UINTN               FreeCount;
 
     VOID*               Data;
     VOID*               DataEnd;
@@ -240,6 +242,25 @@ SlabAllocate (
     IN  SLAB_CACHE* Cache,
     IN  UINTN       Flags,
     OUT VOID**      Object
+    );
+
+/**
+ * @brief Free an object from a slab cache
+ *
+ * @param[in]     Cache The cache to free from
+ * @param[in]     Flags The flags for the free
+ * @param[in,out] Object The object to free
+ *
+ * @return STATUS_SUCCESS              The free was successful
+ * @return STATUS_INVALID_PARAMETER    Object or Cache is NULL
+ * @return STATUS_NOT_FOUND            The object was not found in the cache
+ **/
+STATUS
+SYSAPI
+SlabFree (
+    IN     SLAB_CACHE* Cache,
+    IN     UINTN       Flags,
+    IN OUT VOID**      Object
     );
 
 // ------------------------------------------------- General Purpose Allocation

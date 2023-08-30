@@ -3,6 +3,13 @@
 
 // ----------------------------------------------------------------- Slab Cache
 
+#define MINIMUM_OBJECT_COUNT 16 // At least 16 objects per slab
+                                // to fight against inefficiency when using
+                                // an object larger than a page.
+                                //
+                                // Although this will consume more memory,
+                                // if not all objects are used.
+
 /**
  * @brief Create a slab cache
  *
@@ -28,6 +35,7 @@ CreateSlabCache (
 {
     STATUS      Status;
     SLAB_CACHE* CachePtr;
+    UINTN       ObjectCount;
 
     Status = STATUS_SUCCESS;
 
@@ -53,20 +61,14 @@ CreateSlabCache (
 
     ZeroMemory (CachePtr, sizeof (SLAB_CACHE));
 
+    ObjectCount = ALIGN_UP (PAGE_SIZE_4K, ObjectSize) / ObjectSize;
+
     CachePtr->ObjectSize  = ObjectSize;
-    CachePtr->ObjectCount = ALIGN_UP (PAGE_SIZE_4K, ObjectSize) / ObjectSize;
+    CachePtr->ObjectCount = MAX (ObjectCount, MINIMUM_OBJECT_COUNT);
     CachePtr->Flags       = Flags;
     CachePtr->Empty       = NULL;
     CachePtr->Ctor        = Ctor;
     CachePtr->Dtor        = Dtor;
-
-    //
-    // Create an initial empty slab
-    //
-    Status = AllocateEmptySlab (CachePtr);
-    if (FAILED (Status)) {
-        goto Exit;
-    }
 
 Exit:
     return Status;
@@ -143,19 +145,97 @@ SlabAllocate (
     )
 {
     STATUS Status;
+    SLAB*  Slab;
+
+    Status = STATUS_SUCCESS;
+
+    if ((Cache == NULL) || (Object == NULL)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+
+    Slab = NULL;
 
     //
     // First we want to check if there are any partially filled slabs
     // If there are, we want to allocate from them.
     //
-    // If there are not, we want to check if we have an empty slab,
-    // and if we do, we want to allocate from that.
-    //
-    // otherwise, we want to allocate a new slab and allocate from that.
-    //
+    Status = FindSlabForAllocation (Cache, &Slab);
+    if (FAILED (Status)) {
+        if (Status != STATUS_NOT_FOUND) {
+            goto Exit; // Unexpected error
+        }
 
-    Status = STATUS_NOT_IMPLEMENTED;
+        //
+        // If we didn't find one, we have to allocate a new slab.
+        //
+        Status = AllocateEmptySlab (Cache);
+        if (FAILED (Status)) {
+            goto Exit;
+        }
 
+        //
+        // Now that we have a new slab, we want to try to find that slab again.
+        //
+        Status = FindSlabForAllocation (Cache, &Slab);
+        if (FAILED (Status)) {
+            // This should never happen. but if it does, this is a safeguard.
+            goto Exit;
+        }
+    }
+
+    //
+    // Now that we have a slab, we want to allocate an object from it.
+    //
+    Status = AllocateObjectFromSlab (Slab, Flags, Object);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+
+Exit:
+    return Status;
+}
+
+/**
+ * @brief Free an object from a slab cache
+ *
+ * @param[in]     Cache The cache to free from
+ * @param[in]     Flags The flags for the free
+ * @param[in,out] Object The object to free
+ *
+ * @return STATUS_SUCCESS              The free was successful
+ * @return STATUS_INVALID_PARAMETER    Object or Cache is NULL
+ * @return STATUS_NOT_FOUND            The object was not found in the cache
+ **/
+STATUS
+SYSAPI
+SlabFree (
+    IN     SLAB_CACHE* Cache,
+    IN     UINTN       Flags,
+    IN OUT VOID**      Object
+    )
+{
+    STATUS Status;
+    SLAB*  Slab;
+    UINTN Bit;
+    Status = STATUS_SUCCESS;
+    
+    if ((Object == NULL) || (Cache == NULL)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    Status = FindSlabForObject (Cache, *Object, &Slab, &Bit);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+    
+    Status = FreeObjectInSlab (Slab, Flags, Bit);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+    
+Exit:
     return Status;
 }
 

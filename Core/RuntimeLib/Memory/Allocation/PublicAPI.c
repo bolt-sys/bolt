@@ -1,59 +1,12 @@
 #include "Memory.h"
+#include "Utilities.h"
 
-STATUS
-SYSAPI
-DefaultSlabCtor (
-    IN          VOID*       Object,
-    IN          SLAB_CACHE* Cache,
-    IN OPTIONAL UINTN       Flags
-    )
-{
-    STATUS Status;
-
-    Status = STATUS_SUCCESS;
-
-    if ((Object == NULL) || (Cache == NULL)) {
-        Status = STATUS_INVALID_PARAMETER;
-        goto Exit;
-    }
-
-    if (Flags & SLAB_CACHE_FLAGS_ZERO) {
-        ZeroMemory (Object, Cache->ObjectSize);
-    }
-
-Exit:
-    return Status;
-}
-
-STATUS
-SYSAPI
-DefaultSlabDtor (
-    IN          VOID*       Object,
-    IN          SLAB_CACHE* Cache,
-    IN OPTIONAL UINTN       Flags
-    )
-{
-    STATUS Status;
-
-    Status = STATUS_SUCCESS;
-
-    if ((Object == NULL) || (Cache == NULL)) {
-        Status = STATUS_INVALID_PARAMETER;
-        goto Exit;
-    }
-
-    if (Flags & SLAB_CACHE_FLAGS_ZERO) {
-        ZeroMemory (Object, Cache->ObjectSize);
-    }
-
-Exit:
-    return Status;
-}
+// ----------------------------------------------------------------- Slab Cache
 
 /**
  * @brief Create a slab cache
  *
- * @param[in]          Cache      The cache to initialize
+ * @param[out]         Cache      The cache to initialize
  * @param[in]          ObjectSize The size of the objects to be allocated
  * @param[in,optional] Flags      The flags for the cache
  * @param[in,optional] Ctor       The constructor for the objects
@@ -66,7 +19,7 @@ Exit:
 STATUS
 SYSAPI
 CreateSlabCache (
-    IN OUT      SLAB_CACHE** Cache,
+    OUT         SLAB_CACHE** Cache,
     IN          UINTN        ObjectSize,
     IN OPTIONAL UINTN        Flags,
     IN OPTIONAL SLAB_CTOR    Ctor,
@@ -101,10 +54,19 @@ CreateSlabCache (
     ZeroMemory (CachePtr, sizeof (SLAB_CACHE));
 
     CachePtr->ObjectSize  = ObjectSize;
-    CachePtr->ObjectCount = 0;
+    CachePtr->ObjectCount = ALIGN_UP (PAGE_SIZE_4K, ObjectSize) / ObjectSize;
     CachePtr->Flags       = Flags;
+    CachePtr->Empty       = NULL;
+    CachePtr->Ctor        = Ctor;
+    CachePtr->Dtor        = Dtor;
 
-    CachePtr->Empty = NULL;
+    //
+    // Create an initial empty slab
+    //
+    Status = AllocateEmptySlab (CachePtr);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
 
 Exit:
     return Status;
@@ -159,6 +121,8 @@ Exit:
     return Status;
 }
 
+// ------------------------------------------------------------ Slab Allocation
+
 /**
  * @brief Allocate an object from a slab cache
  *
@@ -172,10 +136,10 @@ Exit:
  **/
 STATUS
 SYSAPI
-AllocateFromSlabCache (
-    OUT VOID**      Object,
+SlabAllocate (
     IN  SLAB_CACHE* Cache,
-    IN  UINTN       Flags
+    IN  UINTN       Flags,
+    OUT VOID**      Object
     )
 {
     STATUS Status;
@@ -195,24 +159,54 @@ AllocateFromSlabCache (
     return Status;
 }
 
-/**
- * @brief Free an object from a slab cache
- *
- * @param[in]     Cache The cache to free from
- * @param[in,out] Object The object to free
- *
- * @return STATUS_SUCCESS              The free was successful
- **/
+// --------------------------------------------------- Constructor / Destructor
+
 STATUS
 SYSAPI
-FreeToSlabCache (
-    IN     SLAB_CACHE* Cache,
-    IN OUT VOID**      Object
+DefaultSlabCtor (
+    IN          VOID*       Object,
+    IN          SLAB_CACHE* Cache,
+    IN OPTIONAL UINTN       Flags
     )
 {
     STATUS Status;
 
-    Status = STATUS_NOT_IMPLEMENTED;
+    Status = STATUS_SUCCESS;
 
+    if ((Object == NULL) || (Cache == NULL)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+
+    if (Flags & SLAB_CACHE_FLAGS_ZERO) {
+        ZeroMemory (Object, Cache->ObjectSize);
+    }
+
+Exit:
+    return Status;
+}
+
+STATUS
+SYSAPI
+DefaultSlabDtor (
+    IN          VOID*       Object,
+    IN          SLAB_CACHE* Cache,
+    IN OPTIONAL UINTN       Flags
+    )
+{
+    STATUS Status;
+
+    Status = STATUS_SUCCESS;
+
+    if ((Object == NULL) || (Cache == NULL)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+
+    if (Flags & SLAB_CACHE_FLAGS_ZERO) {
+        ZeroMemory (Object, Cache->ObjectSize);
+    }
+
+Exit:
     return Status;
 }

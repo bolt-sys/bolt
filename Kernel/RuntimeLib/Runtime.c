@@ -37,6 +37,29 @@ StartupRoutine (
 
     MemoryInit (&g_Parameters);
     
+    // TODO: remove this
+    SLAB_CACHE* Cache;
+    
+    STATUS Status = STATUS_SUCCESS;
+    Status = CreateSlabCache(&Cache, 0x4000, 0, DefaultSlabCtor, DefaultSlabDtor);
+    if (FAILED(Status)) {
+        DisableInterrupts();
+        for (;;) {
+            asm volatile ("hlt");
+        }
+    }
+    
+    UINT64* Test;
+    Status = SlabAllocate(Cache, 0, (VOID**)&Test);
+    if (FAILED(Status)) {
+        DisableInterrupts();
+        for (;;) {
+            asm volatile ("hlt");
+        }
+    }
+    
+    *Test = 0xDEADBEEF;
+    
     //
     // Enter the Kernel
     //

@@ -12,7 +12,7 @@
 #define STATUS_ERROR_CODE_MASK         0x0000FFFF
 
 #define COMBINE_STATUS(Severity, UserDefined, Facility, ErrorCode) \
-    ((((int)Severity) << 31) | (((int)UserDefined) << 30) | (((int)Facility) << 16) | ((int)ErrorCode))
+    ((((unsigned long)Severity) << 31) | (((unsigned long)UserDefined) << 30) | (((unsigned long)Facility) << 16) | ((unsigned long)ErrorCode))
 
 #define STATUS_SEVERITY_SUCCESS        0
 #define STATUS_SEVERITY_ERROR          1
@@ -47,5 +47,5 @@
 #define STATUS_ALREADY_INITIALIZED     COMBINE_STATUS(STATUS_SEVERITY_ERROR,   0,   STATUS_FACILITY_COMMON, 20)
 #define STATUS_NOT_INITIALIZED         COMBINE_STATUS(STATUS_SEVERITY_ERROR,   0,   STATUS_FACILITY_COMMON, 21)
 
-#define SUCCESS(Status) ((Status & STATUS_SEVERITY_ERROR_MASK) == STATUS_SEVERITY_SUCCESS)
-#define FAILED(Status)   ((Status & STATUS_SEVERITY_ERROR_MASK) == STATUS_SEVERITY_ERROR)
+#define SUCCESS(Status) (((Status & STATUS_SEVERITY_ERROR_MASK) >> 31) == STATUS_SEVERITY_SUCCESS)
+#define FAILED(Status)  (((Status & STATUS_SEVERITY_ERROR_MASK) >> 31) == STATUS_SEVERITY_ERROR)

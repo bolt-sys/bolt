@@ -130,33 +130,9 @@ FreePages (
 #define SLAB_CACHE_FLAGS_NONE BIT(0)
 #define SLAB_CACHE_FLAGS_ZERO BIT(1)
 
-typedef struct _SLAB_FREELIST {
-    struct _SLAB_FREELIST* Next;
-    VOID*                  Object;
-} SLAB_FREELIST;
+typedef struct _SLAB_CACHE SLAB_CACHE;
 
-typedef struct _SLAB {
-    struct _SLAB*       Next;
-    struct _SLAB_CACHE* Cache;
-
-    SLAB_FREELIST*      FreeList;
-    UINTN               FreeCount;
-
-    UINT8               Data[0];
-} SLAB;
-
-typedef struct _SLAB_CACHE {
-    struct _SLAB* Full;
-    struct _SLAB* Partial;
-    struct _SLAB* Empty;
-
-    UINTN         Flags;
-
-    UINTN         ObjectSize;
-    UINTN         ObjectCount;
-} SLAB_CACHE;
-
-typedef STATUS SYSAPI (* SLAB_CTOR)(
+typedef STATUS SYSAPI      (* SLAB_CTOR)(
     IN          VOID*       Object,
     IN          SLAB_CACHE* Cache,
     IN OPTIONAL UINTN       Flags
@@ -167,6 +143,33 @@ typedef STATUS SYSAPI (* SLAB_DTOR)(
     IN          SLAB_CACHE* Cache,
     IN OPTIONAL UINTN       Flags
     );
+
+typedef struct _SLAB {
+    struct _SLAB*       Next;
+    struct _SLAB*       Prev;
+    struct _SLAB_CACHE* Cache;
+
+    CHAR8*              FreeMap;
+    CHAR8*              FreeMapEnd;
+    UINTN               FreeCount;
+
+    VOID*               Data;
+    VOID*               DataEnd;
+} SLAB;
+
+typedef struct _SLAB_CACHE {
+    struct _SLAB* Full;
+    struct _SLAB* Partial;
+    struct _SLAB* Empty;
+
+    SLAB_CTOR     Ctor;
+    SLAB_DTOR     Dtor;
+
+    UINTN         Flags;
+
+    UINTN         ObjectSize;  // Size of the objects to be allocated
+    UINTN         ObjectCount; // Number of objects per slab
+} SLAB_CACHE;
 
 STATUS
 SYSAPI
@@ -187,7 +190,7 @@ DefaultSlabDtor (
 /**
  * @brief Create a slab cache
  *
- * @param[in]          Cache      The cache to initialize
+ * @param[out]         Cache      The cache to initialize
  * @param[in]          ObjectSize The size of the objects to be allocated
  * @param[in,optional] Flags      The flags for the cache
  * @param[in,optional] Ctor       The constructor for the objects
@@ -200,7 +203,7 @@ DefaultSlabDtor (
 STATUS
 SYSAPI
 CreateSlabCache (
-    IN OUT      SLAB_CACHE** Cache,
+    OUT         SLAB_CACHE** Cache,
     IN          UINTN        ObjectSize,
     IN OPTIONAL UINTN        Flags,
     IN OPTIONAL SLAB_CTOR    Ctor,
@@ -235,24 +238,28 @@ DestroySlabCache (
  **/
 STATUS
 SYSAPI
-AllocateFromSlabCache (
-    OUT VOID**      Object,
+SlabAllocate (
     IN  SLAB_CACHE* Cache,
-    IN  UINTN       Flags
+    IN  UINTN       Flags,
+    OUT VOID**      Object
     );
 
 /**
  * @brief Free an object from a slab cache
  *
  * @param[in]     Cache The cache to free from
+ * @param[in]     Flags The flags for the free
  * @param[in,out] Object The object to free
  *
  * @return STATUS_SUCCESS              The free was successful
+ * @return STATUS_INVALID_PARAMETER    Object or Cache is NULL
+ * @return STATUS_NOT_FOUND            The object was not found in the cache
  **/
 STATUS
 SYSAPI
-FreeToSlabCache (
+SlabFree (
     IN     SLAB_CACHE* Cache,
+    IN     UINTN       Flags,
     IN OUT VOID**      Object
     );
 

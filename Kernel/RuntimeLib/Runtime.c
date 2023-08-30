@@ -36,7 +36,7 @@ StartupRoutine (
     IDTInit ();
 
     MemoryInit (&g_Parameters);
-    
+
     //
     // Enter the Kernel
     //

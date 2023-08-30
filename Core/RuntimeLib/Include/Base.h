@@ -67,6 +67,7 @@ typedef unsigned int STATUS;
 
 #define BIT(_X)                  (1ULL << (_X))
 #define BIT_IS_SET(_X, _Y)       (((_X) & BIT(_Y)) != 0)
+#define BIT_IS_CLEAR(_X, _Y)     (((_X) & BIT(_Y)) == 0)
 #define BIT_SET(_X, _Y)          ((_X) |= BIT(_Y))
 #define BIT_CLEAR(_X, _Y)        ((_X) &= ~BIT(_Y))
 #define BIT_FLIP(_X, _Y)         ((_X) ^= BIT(_Y))

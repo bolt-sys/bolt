@@ -64,7 +64,7 @@ ZeroMemory (
     IN UINTN Length
     );
 
-// ------------------------------------------------------------ Page SlabAllocation
+// -------------------------------------------------------- Page SlabAllocation
 
 #define PAGE_SIZE_4K 0x1000     // Base page size
 #define PAGE_SIZE_2M 0x200000   // Large page size
@@ -263,7 +263,7 @@ SlabFree (
     IN OUT VOID**      Object
     );
 
-// ------------------------------------------------- General Purpose SlabAllocation
+// --------------------------------------------- General Purpose SlabAllocation
 
 /**
  * @brief Initialize the Heap

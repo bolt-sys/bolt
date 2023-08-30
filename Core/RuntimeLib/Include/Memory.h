@@ -124,3 +124,136 @@ FreePages (
     IN OUT VOID** Address,
     IN     UINTN  Pages
     );
+
+// ------------------------------------------------------------ Slab Allocation
+
+#define SLAB_CACHE_FLAGS_NONE BIT(0)
+#define SLAB_CACHE_FLAGS_ZERO BIT(1)
+
+typedef struct _SLAB_FREELIST {
+    struct _SLAB_FREELIST* Next;
+    VOID*                  Object;
+} SLAB_FREELIST;
+
+typedef struct _SLAB {
+    struct _SLAB*       Next;
+    struct _SLAB_CACHE* Cache;
+
+    SLAB_FREELIST*      FreeList;
+    UINTN               FreeCount;
+
+    UINT8               Data[0];
+} SLAB;
+
+typedef struct _SLAB_CACHE {
+    struct _SLAB* Full;
+    struct _SLAB* Partial;
+    struct _SLAB* Empty;
+
+    UINTN         Flags;
+
+    UINTN         ObjectSize;
+    UINTN         ObjectCount;
+} SLAB_CACHE;
+
+typedef STATUS SYSAPI (* SLAB_CTOR)(
+    IN          VOID*       Object,
+    IN          SLAB_CACHE* Cache,
+    IN OPTIONAL UINTN       Flags
+    );
+
+typedef STATUS SYSAPI (* SLAB_DTOR)(
+    IN          VOID*       Object,
+    IN          SLAB_CACHE* Cache,
+    IN OPTIONAL UINTN       Flags
+    );
+
+STATUS
+SYSAPI
+DefaultSlabCtor (
+    IN          VOID*       Object,
+    IN          SLAB_CACHE* Cache,
+    IN OPTIONAL UINTN       Flags
+    );
+
+STATUS
+SYSAPI
+DefaultSlabDtor (
+    IN          VOID*       Object,
+    IN          SLAB_CACHE* Cache,
+    IN OPTIONAL UINTN       Flags
+    );
+
+/**
+ * @brief Create a slab cache
+ *
+ * @param[in]          Cache      The cache to initialize
+ * @param[in]          ObjectSize The size of the objects to be allocated
+ * @param[in,optional] Flags      The flags for the cache
+ * @param[in,optional] Ctor       The constructor for the objects
+ * @param[in,optional] Dtor       The destructor for the objects
+ *
+ * @return STATUS_SUCCESS              The initialization was successful
+ * @return STATUS_INVALID_PARAMETER    Cache is NULL or ObjectSize is 0
+ * @return STATUS_NOT_INITIALIZED      The Page Allocator is not initialized
+ **/
+STATUS
+SYSAPI
+CreateSlabCache (
+    IN OUT      SLAB_CACHE** Cache,
+    IN          UINTN        ObjectSize,
+    IN OPTIONAL UINTN        Flags,
+    IN OPTIONAL SLAB_CTOR    Ctor,
+    IN OPTIONAL SLAB_DTOR    Dtor
+    );
+
+/**
+ * @brief Destroy a slab cache
+ *
+ * @param[in,out] Cache The cache to destroy
+ *
+ * @return STATUS_SUCCESS              The destruction was successful
+ * @return STATUS_INVALID_PARAMETER    Cache is NULL
+ * @return STATUS_NOT_INITIALIZED      The Page Allocator is not initialized
+ **/
+STATUS
+SYSAPI
+DestroySlabCache (
+    IN OUT SLAB_CACHE** Cache
+    );
+
+/**
+ * @brief Allocate an object from a slab cache
+ *
+ * @param[out] Object The object to allocate
+ * @param[in]  Cache The cache to allocate from
+ * @param[in]  Flags The flags for the allocation
+ *
+ * @return STATUS_SUCCESS              The allocation was successful
+ * @return STATUS_INVALID_PARAMETER    Object or Cache is NULL
+ *
+ **/
+STATUS
+SYSAPI
+AllocateFromSlabCache (
+    OUT VOID**      Object,
+    IN  SLAB_CACHE* Cache,
+    IN  UINTN       Flags
+    );
+
+/**
+ * @brief Free an object from a slab cache
+ *
+ * @param[in]     Cache The cache to free from
+ * @param[in,out] Object The object to free
+ *
+ * @return STATUS_SUCCESS              The free was successful
+ **/
+STATUS
+SYSAPI
+FreeToSlabCache (
+    IN     SLAB_CACHE* Cache,
+    IN OUT VOID**      Object
+    );
+
+// ------------------------------------------------- General Purpose Allocation

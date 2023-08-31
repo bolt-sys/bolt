@@ -21,9 +21,9 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 
 //  CR3   - Control Register for Paging.
 // ----------------------------------------
-//  0-2   - Ignored
-//    3   - Page-level write-through
-//    4   - Page-level cache disable
+//   0-2  - Ignored
+//     3  - Page-level write-through
+//     4  - Page-level cache disable
 //  5-11  - Ignored
 // 12-51  - Physical address of PML4 table
 // 52-63  - Ignored

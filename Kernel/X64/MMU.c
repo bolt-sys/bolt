@@ -17,7 +17,9 @@ STATIC_ASSERT (sizeof (PD)   == PAGE_SIZE_4K, "Invalid size for PD");
 STATIC_ASSERT (sizeof (PDPT) == PAGE_SIZE_4K, "Invalid size for PDPT");
 STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 
-#define MAXIMUM_PHYSICAL_ADDRESS 0x000FFFFFFFFFF000ULL // 52 bits
+#define MAXIMUM_PHYSICAL_ADDRESS_4KB 0x000FFFFFFFFFF000ULL
+#define MAXIMUM_PHYSICAL_ADDRESS_2MB 0x000FFFFFFFE00000ULL
+#define MAXIMUM_PHYSICAL_ADDRESS_1GB 0x000FFFFFFC000000ULL
 
 //  CR3   - Control Register for Paging.
 // ----------------------------------------
@@ -29,7 +31,7 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 // 52-63  - Ignored
 #define CR3_PWT (1 << 3)
 #define CR3_PCD (1 << 4)
-#define CR3_PML4_ADDRESS(_X) ((_X) & MAXIMUM_PHYSICAL_ADDRESS)
+#define CR3_PML4_ADDRESS(_X) ((_X) & MAXIMUM_PHYSICAL_ADDRESS_4KB)
 
 //  Virtual Address Format (for 4-level paging, 4KB pages)
 //  See Intel SDM Vol 3A, Section 4.5.4, Figure 4-8
@@ -70,7 +72,7 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 #define PDPT_INDEX(_X)   (((_X) >> 30) & 0x1FF)
 #define PD_INDEX(_X)     (((_X) >> 21) & 0x1FF)
 #define PT_INDEX(_X)     (((_X) >> 12) & 0x1FF)
-#define OFFSET(_X)       ((_X) & 0xFFF)
+#define P_OFFSET(_X)     ((_X) & 0xFFF)
 
 //  Page Map Level 4 Entry (PML4E)
 //  See Intel SDM Vol 3A, Section 4.5.4, Table 4-15.
@@ -98,7 +100,7 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 #define PML4E_ACCESSED        BIT(5)
 #define PML4E_RESERVED        BIT(7)
 #define PML4E_RESTART         BIT(11)
-#define PML4E_PDPT_ADDRESS(_X) ((_X) & MAXIMUM_PHYSICAL_ADDRESS)
+#define PML4E_PDPT_ADDRESS(_X) ((_X) & MAXIMUM_PHYSICAL_ADDRESS_4KB)
 #define PML4E_EXECUTE_DISABLE BIT(63)
 
 #define PML4E_USER_DEFINED(_DATA) \
@@ -136,9 +138,10 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 #define PDPTE_DIRTY           BIT(6)
 #define PDPTE_PAGE_SIZE       BIT(7)
 #define PDPTE_GLOBAL          BIT(8)
-#define PDPTE_MEMORY_TYPE     BIT(12)                       // Only used if Page Size = 0
-#define PDPTE_PD_ADDRESS(_X)      ((_X) & MAXIMUM_PHYSICAL_ADDRESS)
-#define PDPTE_PROTECTION_KEY(_X)  (((_X) & 0x1F) << 59)     // Only used if Page Size = 0
+#define PDPTE_MEMORY_TYPE     BIT(12)                       // Only used if Page Size = 1
+#define PDPTE_PD_ADDRESS(_X)      ((_X) & MAXIMUM_PHYSICAL_ADDRESS_4KB)
+#define PDPTE_1GB_ADDRESS(_X)     ((_X) & MAXIMUM_PHYSICAL_ADDRESS_1GB)
+#define PDPTE_PROTECTION_KEY(_X)  (((_X) & 0x1F) << 59)     // Only used if Page Size = 1
 #define PDPTE_EXECUTE_DISABLE BIT(63)
 #define PDPTE_USER_DEFINED(_DATA) (((_DATA) & 0x3FF) << 52) // Only used if Page Size = 0
 
@@ -175,7 +178,8 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 #define PDE_PAGE_SIZE       BIT(7)
 #define PDE_GLOBAL          BIT(8)
 #define PDE_MEMORY_TYPE     BIT(12)                       // Only used if Page Size = 0
-#define PDE_PT_ADDRESS(_X)      ((_X) & MAXIMUM_PHYSICAL_ADDRESS)
+#define PDE_PT_ADDRESS(_X)      ((_X) & MAXIMUM_PHYSICAL_ADDRESS_4KB)
+#define PDE_2MB_ADDRESS(_X)     ((_X) & MAXIMUM_PHYSICAL_ADDRESS_2MB)
 #define PDE_PROTECTION_KEY(_X)  (((_X) & 0x1F) << 59)     // Only used if Page Size = 0
 #define PDE_EXECUTE_DISABLE BIT(63)
 #define PDE_USER_DEFINED(_DATA) (((_DATA) & 0x3FF) << 52) // Only used if Page Size = 0
@@ -209,7 +213,7 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 #define PTE_DIRTY           BIT(6)
 #define PTE_MEMORY_TYPE     BIT(7)
 #define PTE_GLOBAL          BIT(8)
-#define PTE_P_ADDRESS(_X)       ((_X) & MAXIMUM_PHYSICAL_ADDRESS)
+#define PTE_P_ADDRESS(_X)       ((_X) & MAXIMUM_PHYSICAL_ADDRESS_4KB)
 #define PTE_PROTECTION_KEY(_X)  (((_X) & 0x1F) << 59)
 #define PTE_EXECUTE_DISABLE BIT(63)
 #define PTE_USER_DEFINED(_DATA) (((_DATA) & 0x3FF) << 52)
@@ -217,15 +221,15 @@ STATIC_ASSERT (sizeof (PML4) == PAGE_SIZE_4K, "Invalid size for PML4");
 STATUS
 SYSAPI
 CreateVirtualAddressSpace (
-    OUT VIRTUAL_ADDRESS_SPACE* MemoryMap
+    OUT VIRTUAL_ADDRESS_SPACE* VirtualAddressSpace
     )
 {
     STATUS Status;
     PML4*  PML4;
 
     Status = STATUS_SUCCESS;
-
-    if (MemoryMap == NULL) {
+    
+    if (VirtualAddressSpace == NULL) {
         Status = STATUS_INVALID_PARAMETER;
         goto Exit;
     }
@@ -233,6 +237,325 @@ CreateVirtualAddressSpace (
     Status = AllocatePages ((VOID*)&PML4, 1, PAGE_SIZE_4K);
     if (FAILED (Status)) {
         goto Exit;
+    }
+    
+    *VirtualAddressSpace = (VIRTUAL_ADDRESS_SPACE) PML4;
+
+Exit:
+    return Status;
+}
+
+STATUS
+SYSAPI
+DestroyVirtualAddressSpace(
+    IN OUT VIRTUAL_ADDRESS_SPACE* VirtualAddressSpace
+)
+{
+    STATUS Status;
+    
+    Status = STATUS_SUCCESS;
+    
+    if (VirtualAddressSpace == NULL) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    if (*VirtualAddressSpace == NULL) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    Status = FreePages(VirtualAddressSpace, 1);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+
+Exit:
+    return Status;
+}
+
+STATUS
+SYSAPI
+MapVirtualAddress(
+    IN VIRTUAL_ADDRESS_SPACE VirtualAddressSpace,
+    IN PHYSICAL_ADDRESS PhysicalAddress,
+    IN UINTN NumberOfPages,
+    IN UINTN Attributes,
+    IN UINTN Type,
+    IN VIRTUAL_ADDRESS VirtualAddress
+)
+{
+    STATUS Status;
+    UINT16 PML4Index, PDPTIndex, PDIndex, PTIndex;
+    PDPTE  PDPTEntry;
+    PDE    PDEntry;
+    PTE    PTEntry;
+    PML4E* PML4;
+    PDPTE* PDPT;
+    PDE  * PD;
+    PTE  * PT;
+    
+    Status = STATUS_SUCCESS;
+    
+    //
+    // Validate parameters
+    //
+    if ((VirtualAddressSpace == NULL) || (VirtualAddress == 0)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    if (NumberOfPages == 0) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    if ((Type != MEMORY_TYPE_4KB_PAGE) && (Type != MEMORY_TYPE_2MB_PAGE) && (Type != MEMORY_TYPE_1GB_PAGE)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    if (Attributes
+        & ~(MEMORY_ATTRIBUTE_READ | MEMORY_ATTRIBUTE_WRITE | MEMORY_ATTRIBUTE_EXEC | MEMORY_ATTRIBUTE_CACHEABLE
+            | MEMORY_ATTRIBUTE_WRITE_COMBINED | MEMORY_ATTRIBUTE_WRITE_THROUGH | MEMORY_ATTRIBUTE_WRITE_BACK)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    if (((PhysicalAddress > MAXIMUM_PHYSICAL_ADDRESS_4KB) && (Type == MEMORY_TYPE_4KB_PAGE)) ||
+        ((PhysicalAddress > MAXIMUM_PHYSICAL_ADDRESS_2MB) && (Type == MEMORY_TYPE_2MB_PAGE)) ||
+        ((PhysicalAddress > MAXIMUM_PHYSICAL_ADDRESS_1GB) && (Type == MEMORY_TYPE_1GB_PAGE))) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+    
+    while (NumberOfPages--) {
+        //
+        // Create the necessary page tables
+        //
+        PML4Index = PML4_INDEX (VirtualAddress);
+        PDPTIndex = PDPT_INDEX (VirtualAddress);
+        PDIndex   = PD_INDEX (VirtualAddress);
+        PTIndex   = PT_INDEX (VirtualAddress);
+        
+        // TODO somehow reduce the amount of code duplication here
+        
+        switch (Type) {
+            case MEMORY_TYPE_4KB_PAGE:
+                VirtualAddress += PAGE_SIZE_4K;
+                
+                PML4 = (PDPTE*) VirtualAddressSpace;
+                if (BIT_IS_CLEAR (PML4[PML4Index], PML4E_PRESENT)) {
+                    Status = AllocatePages((VOID*) &PDPT, 1, PAGE_SIZE_4K);
+                    if (FAILED (Status)) {
+                        goto Exit;
+                    }
+                    
+                    PML4[PML4Index] = PML4E_PRESENT | PML4E_READ_WRITE | PML4E_PDPT_ADDRESS ((UINTN) PDPT);
+                }
+                
+                PDPT = (PDPTE*) PML4E_PDPT_ADDRESS (PML4[PML4Index]);
+                if (PDPT == NULL) {
+                    Status = STATUS_OVERLAPPING_BUFFER;
+                    goto Exit;
+                }
+                
+                if (BIT_IS_CLEAR (PDPT[PDPTIndex], PDPTE_PRESENT)) {
+                    Status = AllocatePages((VOID*) &PD, 1, PAGE_SIZE_4K);
+                    if (FAILED (Status)) {
+                        goto Exit;
+                    }
+                    
+                    PDPT[PDPTIndex] = PDPTE_PRESENT | PDPTE_READ_WRITE | PDPTE_PD_ADDRESS ((UINTN) PD);
+                }
+                
+                PD = (PDE*) PDPTE_PD_ADDRESS (PDPT[PDPTIndex]);
+                if (PD == NULL) {
+                    Status = STATUS_OVERLAPPING_BUFFER;
+                    goto Exit;
+                }
+                
+                if (BIT_IS_CLEAR (PD[PDIndex], PDE_PRESENT)) {
+                    Status = AllocatePages((VOID*) &PT, 1, PAGE_SIZE_4K);
+                    if (FAILED (Status)) {
+                        goto Exit;
+                    }
+                    
+                    PD[PDIndex] = PDE_PRESENT | PDE_READ_WRITE | PDE_PT_ADDRESS ((UINTN) PT);
+                }
+                
+                PT = (PTE*) PDE_PT_ADDRESS (PD[PDIndex]);
+                if (PT == NULL) {
+                    Status = STATUS_OVERLAPPING_BUFFER;
+                    goto Exit;
+                }
+                
+                if (BIT_IS_CLEAR (PT[PTIndex], PTE_PRESENT)) {
+                    PT[PTIndex] = PTE_PRESENT | PTE_READ_WRITE | PTE_P_ADDRESS (PhysicalAddress);
+                }
+                
+                break;
+            
+            case MEMORY_TYPE_2MB_PAGE:
+                VirtualAddress += PAGE_SIZE_2M;
+                
+                PML4 = (PDPTE*) VirtualAddressSpace;
+                if (BIT_IS_CLEAR (PML4[PML4Index], PML4E_PRESENT)) {
+                    Status = AllocatePages((VOID*) &PDPT, 1, PAGE_SIZE_4K);
+                    if (FAILED (Status)) {
+                        goto Exit;
+                    }
+                    
+                    PML4[PML4Index] = PML4E_PRESENT | PML4E_READ_WRITE | PML4E_PDPT_ADDRESS ((UINTN) PDPT);
+                }
+                
+                PDPT = (PDPTE*) PML4E_PDPT_ADDRESS (PML4[PML4Index]);
+                if (BIT_IS_CLEAR (PDPT[PDPTIndex], PDPTE_PRESENT)) {
+                    Status = AllocatePages((VOID*) &PD, 1, PAGE_SIZE_4K);
+                    if (FAILED (Status)) {
+                        goto Exit;
+                    }
+                    
+                    PDPT[PDPTIndex] = PDPTE_PRESENT | PDPTE_READ_WRITE | PDPTE_PD_ADDRESS ((UINTN) PD);
+                }
+                
+                PD = (PDE*) PDPTE_PD_ADDRESS (PDPT[PDPTIndex]);
+                if (BIT_IS_CLEAR (PD[PDIndex], PDE_PRESENT)) {
+                    PD[PDIndex] = PDE_PRESENT | PDE_READ_WRITE | PDE_PAGE_SIZE | PDE_2MB_ADDRESS (PhysicalAddress);
+                }
+                
+                break;
+            
+            case MEMORY_TYPE_1GB_PAGE:
+                VirtualAddress += PAGE_SIZE_1G;
+                
+                PML4 = (PDPTE*) VirtualAddressSpace;
+                if (BIT_IS_CLEAR (PML4[PML4Index], PML4E_PRESENT)) {
+                    Status = AllocatePages((VOID*) &PDPT, 1, PAGE_SIZE_4K);
+                    if (FAILED (Status)) {
+                        goto Exit;
+                    }
+                    
+                    PML4[PML4Index] = PML4E_PRESENT | PML4E_READ_WRITE | PML4E_PDPT_ADDRESS ((UINTN) PDPT);
+                }
+                
+                PDPT = (PDPTE*) PML4E_PDPT_ADDRESS (PML4[PML4Index]);
+                if (BIT_IS_CLEAR (PDPT[PDPTIndex], PDPTE_PRESENT)) {
+                    PDPT[PDPTIndex] = PDPTE_PRESENT | PDPTE_READ_WRITE | PDPTE_PAGE_SIZE
+                        | PDPTE_1GB_ADDRESS (PhysicalAddress);
+                }
+                
+                break;
+        }
+    }
+
+Exit:
+    return Status;
+}
+
+STATUS
+SYSAPI
+ActivateVirtualAddressSpace(
+    IN VIRTUAL_ADDRESS_SPACE VirtualAddressSpace
+)
+{
+    STATUS Status;
+    
+    Status = STATUS_SUCCESS;
+    
+    if (VirtualAddressSpace == NULL) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    __asm__ volatile (
+        "mov %0, %%cr3"
+        :
+        : "r" (CR3_PML4_ADDRESS ((UINTN) VirtualAddressSpace))
+        : "memory"
+        );
+
+Exit:
+    return Status;
+}
+
+STATUS
+SYSAPI
+GetPhysicalAddress(
+    IN OPTIONAL  VIRTUAL_ADDRESS_SPACE VirtualAddressSpace,
+    IN           VIRTUAL_ADDRESS VirtualAddress,
+    OUT          PHYSICAL_ADDRESS* PhysicalAddress
+)
+{
+    STATUS Status;
+    UINT16 PML4Index, PDPTIndex, PDIndex, PTIndex;
+    PDPTE  PDPTEntry;
+    PDE    PDEntry;
+    PTE    PTEntry;
+    PML4E* PML4;
+    PDPTE* PDPT;
+    PDE  * PD;
+    PTE  * PT;
+    
+    Status = STATUS_SUCCESS;
+    
+    //
+    // Validate parameters
+    //
+    if ((VirtualAddress == 0) || (PhysicalAddress == NULL)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+    
+    if (VirtualAddressSpace == NULL) {
+        __asm__ volatile (
+            "mov %%cr3, %0"
+            : "=r" (VirtualAddressSpace)
+            :
+            : "memory"
+            );
+    }
+    
+    //
+    // Get the physical address
+    //
+    PML4Index = PML4_INDEX (VirtualAddress);
+    PDPTIndex = PDPT_INDEX (VirtualAddress);
+    PDIndex   = PD_INDEX (VirtualAddress);
+    PTIndex   = PT_INDEX (VirtualAddress);
+    
+    PML4 = (PDPTE*) VirtualAddressSpace;
+    if ((PML4 == NULL) || BIT_IS_CLEAR (PML4[PML4Index], PML4E_PRESENT)) {
+        Status = STATUS_NOT_FOUND;
+        goto Exit;
+    }
+    
+    PDPT = (PDPTE*) PML4E_PDPT_ADDRESS (PML4[PML4Index]);
+    if ((PDPT == NULL) || BIT_IS_CLEAR (PDPT[PDPTIndex], PDPTE_PRESENT)) {
+        Status = STATUS_NOT_FOUND;
+        goto Exit;
+    }
+    
+    PD = (PDE*) PDPTE_PD_ADDRESS (PDPT[PDPTIndex]);
+    if ((PD == NULL) || BIT_IS_CLEAR (PD[PDIndex], PDE_PRESENT)) {
+        Status = STATUS_NOT_FOUND;
+        goto Exit;
+    }
+    
+    if (BIT_IS_SET (PD[PDIndex], PDE_PAGE_SIZE)) {
+        *PhysicalAddress = PDE_2MB_ADDRESS (PD[PDIndex]) + P_OFFSET (VirtualAddress);
+    } else {
+        PT = (PTE*) PDE_PT_ADDRESS (PD[PDIndex]);
+        if (BIT_IS_CLEAR (PT[PTIndex], PTE_PRESENT)) {
+            Status = STATUS_NOT_FOUND;
+            goto Exit;
+        }
+        
+        *PhysicalAddress = PTE_P_ADDRESS (PT[PTIndex]) + P_OFFSET (VirtualAddress);
     }
 
 Exit:

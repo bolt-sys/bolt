@@ -163,3 +163,29 @@ typedef __builtin_va_list VA_LIST;
 #define  SIZE_2EB    0x2000000000000000ULL
 #define  SIZE_4EB    0x4000000000000000ULL
 #define  SIZE_8EB    0x8000000000000000ULL
+
+// ----------------------------------------------------------------------- GUID
+
+typedef struct GUID {
+    UINT32 Data1;
+    UINT16 Data2;
+    UINT16 Data3;
+    UINT8  Data4[8];
+} GUID;
+
+#define GUID_NULL { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } }
+
+#define GUID_EQ(_X, _Y) \
+    ((_X).Data1 == (_Y).Data1 && \
+     (_X).Data2 == (_Y).Data2 && \
+     (_X).Data3 == (_Y).Data3 && \
+     (_X).Data4[0] == (_Y).Data4[0] && \
+     (_X).Data4[1] == (_Y).Data4[1] && \
+     (_X).Data4[2] == (_Y).Data4[2] && \
+     (_X).Data4[3] == (_Y).Data4[3] && \
+     (_X).Data4[4] == (_Y).Data4[4] && \
+     (_X).Data4[5] == (_Y).Data4[5] && \
+     (_X).Data4[6] == (_Y).Data4[6] && \
+     (_X).Data4[7] == (_Y).Data4[7])
+
+#define GUID_NEQ(_X, _Y) (!GUID_EQ(_X, _Y))

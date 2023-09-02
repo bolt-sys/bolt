@@ -24,7 +24,6 @@ set(C_OPTIONS
 )
 
 set(ASM_OPTIONS
-        "-Fdwarf"
         "-g"
         "-i${CMAKE_CURRENT_LIST_DIR}/source/x86_64"
 )
@@ -35,8 +34,6 @@ set(LINKER_OPTIONS
         "-nostdlib"
         "-static"
         "-pie"
-        "-ztext"
-        "-zmax-page-size=0x1000"
         "-T${LINKER_SCRIPT}"
 )
 

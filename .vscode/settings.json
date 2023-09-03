@@ -1,0 +1,18 @@
+{
+    "uncrustify.configPath.linux": "uncrustify.cfg",
+    "editor.formatOnSave": true,
+    "clangd.arguments": [
+        "--background-index",
+        "--clang-tidy",
+        "--completion-style=bundled",
+        "--header-insertion=iwyu",
+        "--header-insertion-decorators",
+        "--suggest-missing-includes",
+    ],
+    "[c]": {
+        "editor.defaultFormatter": "zachflower.uncrustify",
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "zachflower.uncrustify",
+    }
+}

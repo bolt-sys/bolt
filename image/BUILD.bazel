@@ -1,0 +1,23 @@
+load("//bazel/image:rules.bzl", "image")
+
+image(
+    name = "cd",
+    srcs = [
+        "//kernel",
+
+        # Configuration
+        "cd/limine.cfg",
+
+        # UEFI
+        "@limine//:BOOTAA64.EFI",
+        "@limine//:BOOTIA32.EFI",
+        "@limine//:BOOTRISCV64.EFI",
+        "@limine//:BOOTX64.EFI",
+        "@limine//:limine-uefi-cd.bin",
+
+        # BIOS
+        "@limine//:limine-bios-cd.bin",
+        "@limine//:limine-bios.sys",
+    ],
+    type = "iso",
+)

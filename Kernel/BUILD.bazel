@@ -1,0 +1,77 @@
+cc_binary(
+    name = "kernel",
+    srcs = [
+        "include/Kernel.h",
+        "source/Bootstrap/Limine.c",
+        "source/Main.c",
+    ],
+    additional_linker_inputs = [
+        "x86_64-unknown-elf.ld",
+    ],
+    copts = [
+        # Enable all warnings and treat them as errors
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+
+        # Disable some warnings, they can be a bit over the top
+        "-Wno-unused-parameter",
+        "-Wno-unused-function",
+        "-Wno-unused-variable",
+        "-Wno-ignored-attributes",
+
+        # Freestanding environment
+        "-ffreestanding",
+        "-nostdinc",
+        "-nostdlib",
+
+        # Stack protection is not possible for freestanding environments
+        # unless we implement our own __stack_chk_fail
+        "-fno-stack-protector",
+        "-fno-stack-check",
+
+        # LTO will break inline assembly :/
+        "-fno-lto",
+
+        # Position independent executable
+        "-fPIE",
+
+        # Disable various hardware features
+        "-mno-80387",  # Disable FPU (Requires special handling in the kernel)
+        "-mno-mmx",  # Disable MMX (Requires FPU)
+        "-mno-sse",  # Disable SSE (Requires MMX)
+        "-mno-sse2",  # Disable SSE2 (Requires MMX)
+        "-mno-red-zone",  # Disable red zone, causes issues with interrupts
+    ],
+    features = [
+        "dbg",
+    ],
+    includes = [
+        "include",
+    ],
+    linkopts = [
+        "-pie",
+        "-nostdlib",
+        "-fuse-ld=lld",
+        "-Wl,--build-id=none",
+        #"-Wl,--no-dynamic-linker",
+        #"-Wl,-ztext",
+        #"-Wl,-zmax-page-size=0x1000",
+        "-T",
+        r"$(location x86_64-unknown-elf.ld)",
+    ],
+    linkstatic = True,
+    target_compatible_with = [
+        # The kernel can only be built on a linux machine (or cross-compiled from macos)
+        "@platforms//os:linux",
+        # But we only support running it on x86_64
+        "@platforms//cpu:x86_64",
+    ],
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        "//lib/runtime",
+        "@limine",
+    ],
+)

@@ -1,0 +1,38 @@
+cc_library(
+    name = "runtime",
+    srcs = [
+        "source/Memory/Common.c",
+    ],
+    hdrs = [
+        "include/RuntimeLib.h",
+        "include/RuntimeLib/Error.h",
+        "include/RuntimeLib/GUID.h",
+        "include/RuntimeLib/Memory.h",
+        "include/RuntimeLib/TypeDefs.h",
+    ],
+    strip_include_prefix = "include",
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "@platforms//os:macos": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "tests",
+    # This is a core library, it must be small and fast.
+    size = "small",
+    timeout = "short",
+    srcs = [
+        "tests/GUID.cpp",
+        "tests/Memory.cpp",
+        "tests/TypeDefs.cpp",
+    ],
+    linkstatic = True,
+    shard_count = 6,
+    deps = [
+        ":runtime",
+        "@catch2//:catch2_main",
+    ],
+)

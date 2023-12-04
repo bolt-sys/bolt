@@ -9,7 +9,6 @@
 /.cache/
 /.classpath
 /.clwb/
-!/.clwb/.idea/
 /.factorypath
 /.idea/
 /.ijwb/

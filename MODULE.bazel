@@ -53,6 +53,14 @@ bazel_dep(
 )
 
 #
+# Assembly
+#
+bazel_dep(
+    name = "nasm",
+    version = "2.14.02",
+)
+
+#
 # Non-Module Dependencies
 #
 non_module_dependencies = use_extension("//:bazel/extensions.bzl", "non_module_dependencies")

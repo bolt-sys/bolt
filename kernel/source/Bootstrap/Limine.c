@@ -9,6 +9,7 @@ StartupRoutine (
     // TODO: pass the correct arguments
     // TODO: init architecture
     GDTInit ();
+    IDTInit ();
 
     KernelMain ();
 }

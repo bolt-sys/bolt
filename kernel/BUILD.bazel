@@ -1,14 +1,22 @@
-cc_binary(
+load("//:bazel/nasm.bzl", "nasm_cc_binary")
+
+nasm_cc_binary(
     name = "kernel",
     srcs = [
         "include/Kernel.h",
         "include/Kernel/X64/GDT.h",
+        "include/Kernel/X64/IDT.h",
         "source/Bootstrap/Limine.c",
         "source/Main.c",
         "source/X64/GDT.c",
+        "source/X64/IDT.asm",
+        "source/X64/IDT.c",
     ],
     additional_linker_inputs = [
         "x86_64-unknown-elf.ld",
+    ],
+    asmopts = [
+        "-felf64",
     ],
     copts = [
         # Enable all warnings and treat them as errors
@@ -35,8 +43,8 @@ cc_binary(
         # LTO will break inline assembly :/
         "-fno-lto",
 
-        # Position independent executable
-        "-fPIE",
+        # Position independent code
+        "-fPIC",
 
         # Disable various hardware features
         "-mno-80387",  # Disable FPU (Requires special handling in the kernel)

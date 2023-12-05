@@ -4,8 +4,6 @@
     #error "This file should be included from Kernel.h"
 #endif
 
-#include <RuntimeLib.h>
-
 typedef struct {
     UINT16 LimitLow;
     UINT16 BaseLow;

@@ -17,56 +17,57 @@
  **/
 STATUS
 SYSAPI
-RtlCopyMemory(
-        IN        VOID *Destination,
-        IN        UINTN DestinationSize,
-        IN CONST VOID *Source,
-        IN        UINTN Length
-) {
-    STATUS Status;
-    CONST UINT8 *Src;
-    UINT8 *Dst;
+RtlCopyMemory (
+    IN        VOID* Destination,
+    IN        UINTN DestinationSize,
+    IN CONST VOID*  Source,
+    IN        UINTN Length
+    )
+{
+    STATUS       Status;
+    CONST UINT8* Src;
+    UINT8*       Dst;
 
     Status = STATUS_SUCCESS;
 
     if ((Source == NULL) || (Destination == NULL)) {
-// Invalid parameter.
+        // Invalid parameter.
         Status = STATUS_INVALID_PARAMETER;
         goto Exit;
     }
 
     if ((Source >= Destination) && (Source < (Destination + DestinationSize))) {
-// Overlap. (Source is inside Destination.)
+        // Overlap. (Source is inside Destination.)
         Status = STATUS_INVALID_PARAMETER;
         goto Exit;
     }
 
     if ((Destination >= Source) && (Destination < (Source + Length))) {
-// Overlap. (Destination is inside Source.)
+        // Overlap. (Destination is inside Source.)
         Status = STATUS_INVALID_PARAMETER;
         goto Exit;
     }
 
     if (DestinationSize < Length) {
-// Destination buffer is too small.
+        // Destination buffer is too small.
         Status = STATUS_BUFFER_TOO_SMALL;
         goto Exit;
     }
 
     if (Length == 0) {
-// Nothing to copy.
+        // Nothing to copy.
         Status = STATUS_SUCCESS;
         goto Exit;
     }
 
-    Src = (CONST UINT8 *) Source;
-    Dst = (UINT8 *) Destination;
+    Src = (CONST UINT8*)Source;
+    Dst = (UINT8*)Destination;
 
     while (Length--) {
         *Dst++ = *Src++;
     }
 
-    Exit:
+Exit:
     return Status;
 }
 
@@ -83,35 +84,36 @@ RtlCopyMemory(
  **/
 STATUS
 SYSAPI
-RtlFillMemory(
-        IN VOID *Destination,
-        IN UINTN Length,
-        IN UINT8 Value
-) {
+RtlFillMemory (
+    IN VOID* Destination,
+    IN UINTN Length,
+    IN UINT8 Value
+    )
+{
     STATUS Status;
-    UINT8 *Dst;
+    UINT8* Dst;
 
     Status = STATUS_SUCCESS;
 
     if (Destination == NULL) {
-// Invalid parameter.
+        // Invalid parameter.
         Status = STATUS_INVALID_PARAMETER;
         goto Exit;
     }
 
     if (Length == 0) {
-// Nothing to fill.
+        // Nothing to fill.
         Status = STATUS_SUCCESS;
         goto Exit;
     }
 
-    Dst = (UINT8 *) Destination;
+    Dst = (UINT8*)Destination;
 
     while (Length--) {
         *Dst++ = Value;
     }
 
-    Exit:
+Exit:
     return Status;
 }
 
@@ -127,10 +129,11 @@ RtlFillMemory(
  **/
 STATUS
 SYSAPI
-RtlZeroMemory(
-        IN VOID *Destination,
-        IN UINTN Length
-) {
-// no need to do anything special, we can just return FillMemory
-    return RtlFillMemory(Destination, Length, 0);
+RtlZeroMemory (
+    IN VOID* Destination,
+    IN UINTN Length
+    )
+{
+    // no need to do anything special, we can just return FillMemory
+    return RtlFillMemory (Destination, Length, 0);
 }

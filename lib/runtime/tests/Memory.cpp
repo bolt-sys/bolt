@@ -121,3 +121,57 @@ TEST_CASE ("RtlCopyMemory", "[Memory]") {
         REQUIRE (status == STATUS_SUCCESS);
     }
 }
+
+TEST_CASE ("AllocatePages", "[BumpAllocator]") {
+    BUMP_ALLOCATOR allocator { 0 };
+
+    // Lets make it simple
+    allocator.bumpers[0].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K];
+    allocator.bumpers[0].heap_end   = allocator.bumpers[0].heap_start + PAGE_SIZE_4K;
+    allocator.bumpers[0].next       = 0;
+
+    allocator.bumpers[1].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K * 2];
+    allocator.bumpers[1].heap_end   = allocator.bumpers[1].heap_start + PAGE_SIZE_4K * 2;
+    allocator.bumpers[1].next       = 0;
+
+    allocator.bumpers[2].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K];
+    allocator.bumpers[2].heap_end   = allocator.bumpers[2].heap_start + PAGE_SIZE_4K;
+    allocator.bumpers[2].next       = 0;
+
+    SECTION ("Allocates 4K page") {
+        VOID*  address = NULL;
+        STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 1, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_SUCCESS);
+        REQUIRE (allocator.bumpers[0].next == PAGE_SIZE_4K);
+        REQUIRE (address != NULL);
+        REQUIRE (address == (VOID*)allocator.bumpers[0].heap_start);
+    }
+
+    SECTION ("Allocate multiple pages") {
+        VOID*  address = NULL;
+        STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 2, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_SUCCESS);
+        REQUIRE (allocator.bumpers[1].next == PAGE_SIZE_4K * 2);
+        REQUIRE (address != NULL);
+        REQUIRE (address == (VOID*)allocator.bumpers[1].heap_start);
+    }
+
+    SECTION ("Allocate another 4K page") {
+        VOID*  address = NULL;
+        STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 1, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_SUCCESS);
+        REQUIRE (address != NULL);
+        REQUIRE (address == (VOID*)allocator.bumpers[2].heap_start);
+    }
+
+    SECTION ("Making sure we cannot over-allocate") {
+        VOID*  address = NULL;
+        STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 256, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_OUT_OF_MEMORY);
+        REQUIRE (address == NULL);
+    }
+}

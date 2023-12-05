@@ -12,6 +12,14 @@
 
 EXTERN_C_START
 
+// ------------------------------------------------------------------ Constants
+
+#define PAGE_SIZE_4K 0x1000
+#define PAGE_SIZE_2M 0x200000
+#define PAGE_SIZE_1G 0x40000000
+
+#include "Memory/BumpAllocator.h"
+
 // --------------------------------------------------- Common Memory Operations
 
 /**

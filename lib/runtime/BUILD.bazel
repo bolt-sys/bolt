@@ -1,6 +1,7 @@
 cc_library(
     name = "runtime",
     srcs = [
+        "source/Memory/BumpAllocator.c",
         "source/Memory/Common.c",
     ],
     hdrs = [
@@ -8,6 +9,7 @@ cc_library(
         "include/RuntimeLib/Error.h",
         "include/RuntimeLib/GUID.h",
         "include/RuntimeLib/Memory.h",
+        "include/RuntimeLib/Memory/BumpAllocator.h",
         "include/RuntimeLib/TypeDefs.h",
     ],
     strip_include_prefix = "include",

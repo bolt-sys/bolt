@@ -1,3 +1,6 @@
+# https://github.com/bazelbuild/bazel/issues/18958
+common --enable_bzlmod
+
 # https://github.com/bazelbuild/bazel/issues/7260
 common --incompatible_enable_cc_toolchain_resolution
 build --action_env BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1

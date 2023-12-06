@@ -2,16 +2,35 @@
 common --enable_bzlmod
 
 # https://github.com/bazelbuild/bazel/issues/7260
-common --incompatible_enable_cc_toolchain_resolution
-build --action_env BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build --incompatible_enable_cc_toolchain_resolution
+build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 
-build --platforms @zig_sdk//platform:linux_amd64
-build --host_platform @local_config_platform//:host
+# Needed for Bazel versions before 7.
+# Without this, one can use `--linkopt='-undefined dynamic_lookup'`.
+# This feature is intentionally not supported on macOS.
+build --features=-supports_dynamic_linker
+# Not needed after https://github.com/grailbio/bazel-toolchain/pull/229.
+build --features=-libtool
+
+build --platforms=@toolchains_llvm//platforms:linux-x86_64
+build --host_platform=@local_config_platform//:host
+
+build --verbose_failures
+build --worker_sandboxing
+
+# Improve performance for hermetic builds.
+# https://github.com/bazelbuild/bazel/issues/8230#issuecomment-1129264658
+# https://github.com/aspect-build/gcc-toolchain/issues/85#issue-1340427935
+build --experimental_reuse_sandbox_directories
+
+build --experimental_output_directory_naming_scheme=diff_against_baseline
 
 # Tests are usually written for the host platform, just simpler to deal with.
-test --platforms @local_config_platform//:host
+test --platforms=@local_config_platform//:host
 test --test_sharding_strategy=explicit
 test --test_verbose_timeout_warnings
+test --test_output=errors
+test --sandbox_default_allow_network=false
 
 # User-specific .bazelrc
 try-import %workspace%/user.bazelrc

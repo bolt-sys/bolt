@@ -123,27 +123,23 @@ TEST_CASE ("RtlCopyMemory", "[Memory]") {
 }
 
 TEST_CASE ("AllocatePages", "[BumpAllocator]") {
-    BUMP_ALLOCATOR allocator { 0 };
+    BUMP_ALLOCATOR allocator { };
 
-    // Lets make it simple
+    // Setup code
     allocator.bumpers[0].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K];
     allocator.bumpers[0].heap_end   = allocator.bumpers[0].heap_start + PAGE_SIZE_4K;
-    allocator.bumpers[0].next       = 0;
+    allocator.bumpers[0].next       = allocator.bumpers[0].heap_start;
 
     allocator.bumpers[1].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K * 2];
     allocator.bumpers[1].heap_end   = allocator.bumpers[1].heap_start + PAGE_SIZE_4K * 2;
-    allocator.bumpers[1].next       = 0;
-
-    allocator.bumpers[2].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K];
-    allocator.bumpers[2].heap_end   = allocator.bumpers[2].heap_start + PAGE_SIZE_4K;
-    allocator.bumpers[2].next       = 0;
+    allocator.bumpers[1].next       = allocator.bumpers[1].heap_start;
 
     SECTION ("Allocates 4K page") {
         VOID*  address = NULL;
         STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 1, PAGE_SIZE_4K);
 
         REQUIRE (status == STATUS_SUCCESS);
-        REQUIRE (allocator.bumpers[0].next == PAGE_SIZE_4K);
+        REQUIRE (allocator.bumpers[0].next == allocator.bumpers[0].heap_end);
         REQUIRE (address != NULL);
         REQUIRE (address == (VOID*)allocator.bumpers[0].heap_start);
     }
@@ -153,7 +149,7 @@ TEST_CASE ("AllocatePages", "[BumpAllocator]") {
         STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 2, PAGE_SIZE_4K);
 
         REQUIRE (status == STATUS_SUCCESS);
-        REQUIRE (allocator.bumpers[1].next == PAGE_SIZE_4K * 2);
+        REQUIRE (allocator.bumpers[1].next == allocator.bumpers[1].heap_end);
         REQUIRE (address != NULL);
         REQUIRE (address == (VOID*)allocator.bumpers[1].heap_start);
     }
@@ -164,12 +160,76 @@ TEST_CASE ("AllocatePages", "[BumpAllocator]") {
 
         REQUIRE (status == STATUS_SUCCESS);
         REQUIRE (address != NULL);
-        REQUIRE (address == (VOID*)allocator.bumpers[2].heap_start);
+        REQUIRE (address == (VOID*)allocator.bumpers[0].heap_start);
     }
 
     SECTION ("Making sure we cannot over-allocate") {
         VOID*  address = NULL;
         STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 256, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_OUT_OF_MEMORY);
+        REQUIRE (address == NULL);
+    }
+
+    SECTION ("Try unaligned pages") {
+        VOID*  address = NULL;
+        STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 1, 1025);
+
+        REQUIRE (status == STATUS_INVALID_ALIGNMENT);
+        REQUIRE (address == NULL);
+    }
+
+    SECTION ("Make sure zero pages are not allocated") {
+        VOID*  address = NULL;
+        STATUS status  = BumpAllocatorAllocatePages (&address, &allocator, 0, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_INVALID_PARAMETER);
+        REQUIRE (address == NULL);
+    }
+
+    SECTION ("Lets try a NULL BumpAllocator") {
+        VOID*  address = NULL;
+        STATUS status  = BumpAllocatorAllocatePages (&address, NULL, 1, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_NOT_INITIALIZED);
+        REQUIRE (address == NULL);
+    }
+
+    SECTION ("Make sure NULL Address is not allocated") {
+        STATUS status = BumpAllocatorAllocatePages (NULL, &allocator, 1, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_INVALID_PARAMETER);
+    }
+
+    SECTION ("Allocate multiple pages, multiple times") {
+        VOID*  address = NULL;
+        STATUS status;
+
+        // First allocation, this is guaranteed to succeed
+        status = BumpAllocatorAllocatePages (&address, &allocator, 1, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_SUCCESS);
+        REQUIRE (address != NULL);
+        REQUIRE (address == (VOID*)allocator.bumpers[0].heap_start);
+        REQUIRE (allocator.bumpers[0].next == allocator.bumpers[0].heap_end);
+
+        // Second allocation, this is also guaranteed, but we must be on the second bumper
+        status = BumpAllocatorAllocatePages (&address, &allocator, 1, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_SUCCESS);
+        REQUIRE (address != NULL);
+        REQUIRE (address == (VOID*)allocator.bumpers[1].heap_start);
+
+        // Same as above, but we should reach the end of the second bumper
+        status = BumpAllocatorAllocatePages (&address, &allocator, 1, PAGE_SIZE_4K);
+
+        REQUIRE (status == STATUS_SUCCESS);
+        REQUIRE (address != NULL);
+        REQUIRE (address == (VOID*)(allocator.bumpers[1].heap_start + PAGE_SIZE_4K));
+        REQUIRE (allocator.bumpers[1].next == allocator.bumpers[1].heap_end);
+
+        // Third allocation, this should fail as we have no more bumpers available.
+        status = BumpAllocatorAllocatePages (&address, &allocator, 1, PAGE_SIZE_4K);
 
         REQUIRE (status == STATUS_OUT_OF_MEMORY);
         REQUIRE (address == NULL);

@@ -33,5 +33,13 @@ test --test_verbose_timeout_warnings
 test --test_output=errors
 test --sandbox_default_allow_network=false
 
+# Remote cache
+build --bes_results_url=https://app.buildbuddy.io/invocation/
+build --bes_backend=grpcs://remote.buildbuddy.io
+build --remote_cache=grpcs://remote.buildbuddy.io
+build --remote_download_toplevel
+build --remote_timeout=3600
+
 # User-specific .bazelrc
 try-import %workspace%/user.bazelrc
+

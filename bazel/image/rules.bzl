@@ -89,9 +89,8 @@ def _image_impl(ctx):
                 fi
 
                 # xorriso, for some reason re-uses the symlinks from bazel, thus we need to copy them to a temp folder.
-                # However, cp will also copy the symlinks... Why the heck does this work without the L argument ????
                 mkdir -p .tmp
-                cp -r $ROOTFS_PATH .tmp/rootfs
+                cp -Lr $ROOTFS_PATH .tmp/rootfs
 
                 xorriso -as mkisofs -b limine-bios-cd.bin                    \
                     -no-emul-boot -boot-load-size 4 -boot-info-table         \

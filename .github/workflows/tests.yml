@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
@@ -18,12 +18,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - uses: bazelbuild/setup-bazelisk@v2
+
+      - if: matrix.os == 'ubuntu-latest'
+        name: 📦 Install packages
+        run: sudo apt-get install -y xorriso
 
       - name: 📦 Cache
         uses: actions/cache@v3

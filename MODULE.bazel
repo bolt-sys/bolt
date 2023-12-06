@@ -2,6 +2,7 @@ module(name = "bolt")
 
 #
 # Constraints / Configuration for cross-platform setup.
+#
 bazel_dep(
     name = "platforms",
     version = "0.0.8",
@@ -15,16 +16,13 @@ bazel_dep(
     version = "1.5.0",
 )
 
-#
-# Document Generations
-#
 bazel_dep(
     name = "stardoc",
     version = "0.6.2",
 )
 
 #
-# LLVM C++ Toolchain
+# C++ Toolchain
 #
 bazel_dep(
     name = "toolchains_llvm",
@@ -41,11 +39,17 @@ git_override(
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 
 llvm.toolchain(
-    llvm_version = "17.0.6",
+    llvm_versions = {
+        "": "17.0.6",
+        "darwin-aarch64": "17.0.6",
+        "darwin-x86_64": "15.0.7",
+    },
+    sysroot = {
+        "linux-x86_64": "@@org_chromium_sysroot_linux_x64//:sysroot",
+    },
 )
 
 use_repo(llvm, "llvm_toolchain")
-# use_repo(llvm, "llvm_toolchain_llvm") # if you depend on specific tools in scripts
 
 register_toolchains("@llvm_toolchain//:all")
 

@@ -124,7 +124,8 @@ typedef unsigned int STATUS;
 #define STATIC_ASSERT(_COND, _MSG)                  static_assert(_COND, _MSG " (" __FILE__ ":" STRINGIFY(__LINE__) ")")
 #endif
 
-#define CONTAINER_OF(_PTR, _TYPE, _MEMBER)          ((_TYPE *)((char *)(_PTR) - offsetof(_TYPE, _MEMBER)))
+#define OFFSET_OF(_TYPE, _MEMBER)                   ((UINTN) &(((_TYPE *)0)->_MEMBER))
+#define CONTAINER_OF(_PTR, _TYPE, _MEMBER)          ((_TYPE *)((char *)(_PTR) - OFFSET_OF(_TYPE, _MEMBER)))
 
 // ------------------------------------------------------------------- Typedefs
 

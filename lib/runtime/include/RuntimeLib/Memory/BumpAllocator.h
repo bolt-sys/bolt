@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef __RUNTIME_LIB_H__
     #error "This file should be included from RuntimeLib.h"
 #endif
@@ -9,29 +11,28 @@ typedef struct {
 } BUMPER;
 
 typedef struct {
-    BUMPER bumpers[512];
+    // Inherited from PAGE_ALLOCATOR
+    PA_ALLOCATE_PAGES AllocatePages;
+    PA_FREE_PAGES     FreePages;
+
+    // Bump allocator specific
+    BUMPER            bumpers[512];
 } BUMP_ALLOCATOR;
 
 /**
- * @brief Allocate a range of pages
+ * @brief Empty Initialize an bump allocator.
  *
- * @param[out] Address       The address of the allocated memory
- * @param[in]  BumpAllocator The allocator to use
- * @param[in]  Pages         The amount of pages to allocate
- * @param[in]  Align         The alignment of the allocation
- *                           must be (PAGE_SIZE_4K, PAGE_SIZE_2M, PAGE_SIZE_1G)
+ *        This will initialize the core structure of the bump allocator,
+ *        like setting up the vtable or any other necessary structs.
+ *        However, it will not populate the inner bumpers and is still required by the callee.
  *
- * @return STATUS_SUCCESS             The allocation was successful
- * @return STATUS_INVALID_PARAMETER   Address is NULL or Pages is 0
- * @return STATUS_INVALID_ALIGNMENT   Align is not a valid page size
- * @return STATUS_OUT_OF_MEMORY       The allocation failed
- * @return STATUS_NOT_INITIALIZED     The Allocator is not initialized
- **/
+ *  @param[in] BumpAllocator The allocator to initialize
+ *
+ *  @return STATUS_SUCCESS             The initialization was successful
+ *  @return STATUS_INVALID_PARAMETER   BumpAllocator is NULL
+ */
 STATUS
 SYSAPI
-BumpAllocatorAllocatePages (
-    OUT VOID**         Address,
-    IN BUMP_ALLOCATOR* BumpAllocator,
-    IN  UINTN          Pages,
-    IN  UINTN          Align
+RtlBumpAllocatorInitialize (
+    IN OUT BUMP_ALLOCATOR* BumpAllocator
     );

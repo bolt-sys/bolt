@@ -39,6 +39,9 @@ build --bes_backend=grpcs://remote.buildbuddy.io
 build --remote_cache=grpcs://remote.buildbuddy.io
 build --remote_download_toplevel
 build --remote_timeout=3600
+build --experimental_remote_cache_compression
+build --experimental_remote_build_event_upload=minimal
+build --experimental_profile_include_target_label --experimental_profile_include_primary_output --legacy_important_outputs
 
 # User-specific .bazelrc
 try-import %workspace%/user.bazelrc

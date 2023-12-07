@@ -3,31 +3,26 @@ module(name = "bolt")
 #
 # Constraints / Configuration for cross-platform setup.
 #
-bazel_dep(
-    name = "platforms",
-    version = "0.0.8",
-)
+bazel_dep(name = "platforms", version = "0.0.8")
 
 #
 # Utilities
 #
-bazel_dep(
-    name = "bazel_skylib",
-    version = "1.5.0",
-)
+bazel_dep(name = "bazel_skylib", version = "1.5.0")
+bazel_dep(name = "stardoc", version = "0.6.2")
 
-bazel_dep(
-    name = "stardoc",
-    version = "0.6.2",
+# For compile_commands.json generation.
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    commit = "eca42c63700fccdc49cf58177e0a96f0f6075a68",
 )
 
 #
 # C++ Toolchain
 #
-bazel_dep(
-    name = "toolchains_llvm",
-    version = "0.10.3",
-)
+bazel_dep(name = "toolchains_llvm", version = "0.10.3")
 
 git_override(
     module_name = "toolchains_llvm",
@@ -56,18 +51,12 @@ register_toolchains("@llvm_toolchain//:all")
 #
 # Testing
 #
-bazel_dep(
-    name = "catch2",
-    version = "3.4.0",
-)
+bazel_dep(name = "catch2", version = "3.4.0")
 
 #
 # Assembly
 #
-bazel_dep(
-    name = "nasm",
-    version = "2.14.02",
-)
+bazel_dep(name = "nasm", version = "2.14.02")
 
 #
 # Non-Module Dependencies

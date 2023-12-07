@@ -1,0 +1,19 @@
+{
+  "uncrustify.configPath.linux": "uncrustify.cfg",
+  "editor.formatOnSave": true,
+  "clangd.arguments": [
+    "--background-index",
+    "--clang-tidy",
+    "--completion-style=bundled",
+    "--suggest-missing-includes",
+    "--function-arg-placeholders",
+    "--header-insertion=never"
+  ],
+  "[c]": {
+    "editor.defaultFormatter": "zachflower.uncrustify"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "zachflower.uncrustify"
+  },
+  "cSpell.words": ["SYSAPI"]
+}

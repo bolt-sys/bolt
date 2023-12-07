@@ -1,6 +1,11 @@
 # https://github.com/bazelbuild/bazel/issues/18958
 common --enable_bzlmod
 
+# Enable modern C++ features.
+build --cxxopt=-std=c++23
+# and modern C features.
+build --copt=-std=gnu17
+
 # https://github.com/bazelbuild/bazel/issues/7260
 build --incompatible_enable_cc_toolchain_resolution
 build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
@@ -41,7 +46,7 @@ build --remote_download_toplevel
 build --remote_timeout=3600
 build --experimental_remote_cache_compression
 build --experimental_remote_build_event_upload=minimal
-build --experimental_profile_include_target_label --experimental_profile_include_primary_output --legacy_important_outputs
+build --slim_profile --experimental_profile_include_target_label --legacy_important_outputs
 
 # User-specific .bazelrc
 try-import %workspace%/user.bazelrc

@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE ("STRINGIFY", "[TypeDefsTests]") {
-    REQUIRE (std::string_view (STRINGIFY (HelloWorld)) == "HelloWorld");
+    REQUIRE (std::string (STRINGIFY (HelloWorld)) == "HelloWorld");
 }
 
 TEST_CASE ("ARRAY_SIZE", "[TypeDefsTests]") {

@@ -14,6 +14,8 @@ EXTERN_C_START
 
 // -------------------------------------------------- Structures and Enums
 
+typedef struct _PAGE_ALLOCATOR PAGE_ALLOCATOR;
+
 /**
  * @brief Allocate a range of pages
  *
@@ -31,12 +33,11 @@ EXTERN_C_START
  **/
 typedef
 STATUS
-SYSAPI
 (* PA_ALLOCATE_PAGES)(
-    IN struct _PAGE_ALLOCATOR* Self,
-    OUT VOID**                 Address,
-    IN  UINTN                  Pages,
-    IN  UINTN                  Align
+    IN PAGE_ALLOCATOR* Self,
+    OUT VOID**         Address,
+    IN  UINTN          Pages,
+    IN  UINTN          Align
     );
 
 /**
@@ -65,11 +66,10 @@ SYSAPI
  **/
 typedef
 STATUS
-SYSAPI
 (* PA_FREE_PAGES)(
-    IN     struct _PAGE_ALLOCATOR* Self,
-    IN OUT VOID**                  Address,
-    IN     UINTN                   Pages
+    IN     PAGE_ALLOCATOR* Self,
+    IN OUT VOID**          Address,
+    IN     UINTN           Pages
     );
 
 // A simple allocators struct must look like this:

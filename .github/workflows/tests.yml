@@ -29,6 +29,12 @@ jobs:
         name: 📦 Install packages
         run: sudo apt-get install -y xorriso
 
+      - name: 📦 Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/bazel
+          key: ${{ runner.os }}
+
       - name: 🛠️ Build
         run: bazel build //...
 

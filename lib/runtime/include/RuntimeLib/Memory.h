@@ -198,5 +198,6 @@ RtlZeroMemory (
 // --------------------------------------------------------------- Sub-includes
 
 #include "Memory/BumpAllocator.h"
+#include "Memory/SlabAllocator.h"
 
 EXTERN_C_END

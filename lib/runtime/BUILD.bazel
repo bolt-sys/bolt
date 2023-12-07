@@ -3,6 +3,9 @@ cc_library(
     srcs = [
         "source/Memory/BumpAllocator.c",
         "source/Memory/Common.c",
+        "source/Memory/SlabAllocator.c",
+        "source/Memory/SlabAllocatorUtilities.c",
+        "source/Memory/SlabAllocatorUtilities.h",
     ],
     hdrs = [
         "include/RuntimeLib.h",
@@ -10,6 +13,7 @@ cc_library(
         "include/RuntimeLib/GUID.h",
         "include/RuntimeLib/Memory.h",
         "include/RuntimeLib/Memory/BumpAllocator.h",
+        "include/RuntimeLib/Memory/SlabAllocator.h",
         "include/RuntimeLib/TypeDefs.h",
     ],
     strip_include_prefix = "include",

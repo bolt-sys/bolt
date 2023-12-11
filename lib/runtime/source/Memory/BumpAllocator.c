@@ -152,9 +152,28 @@ BumpAllocator_FreePages (
     IN     UINTN           Pages
     )
 {
-    UNUSED (Self);
+    STATUS Status;
+
     UNUSED (Address);
     UNUSED (Pages);
 
-    return STATUS_SUCCESS; // We cannot free pages, thus we leak.
+    Status = STATUS_SUCCESS;
+
+    if (Self == NULL) {
+        Status = STATUS_NOT_INITIALIZED;
+        goto Exit;
+    }
+
+    if ((Address == NULL) || (Pages == 0)) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+
+    *Address = NULL;
+
+    // We cannot free pages, thus we leak.
+    // TODO: print a warning somehow? maybe an ASSERT?
+
+Exit:
+    return Status;
 }

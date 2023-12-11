@@ -5,6 +5,11 @@
 TEST_CASE ("AllocatePages", "[BumpAllocator]") {
     BUMP_ALLOCATOR allocator { };
 
+    SECTION("Make sure allocator cannot be NULL") {
+        STATUS status = RtlBumpAllocatorInitialize (NULL);
+        REQUIRE (status == STATUS_INVALID_PARAMETER);
+    }
+
     RtlBumpAllocatorInitialize (&allocator);
 
     // Setup code
@@ -15,6 +20,19 @@ TEST_CASE ("AllocatePages", "[BumpAllocator]") {
     allocator.bumpers[1].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K * 2];
     allocator.bumpers[1].heap_end   = allocator.bumpers[1].heap_start + PAGE_SIZE_4K * 2;
     allocator.bumpers[1].next       = allocator.bumpers[1].heap_start;
+
+    SECTION("Make sure we cannot allocate using NULL as Self") {
+        VOID*  address = NULL;
+        STATUS status  = allocator.AllocatePages(NULL, &address, 1, PAGE_SIZE_4K);
+
+        assert(address == NULL);
+        assert(status == STATUS_NOT_INITIALIZED);
+    }
+
+    SECTION("Make sure we cannot free while using NULL as Self") {
+        STATUS status = allocator.FreePages(NULL, NULL, 1);
+        assert(status == STATUS_NOT_INITIALIZED);
+    }
 
     SECTION ("Allocates 4K page") {
         VOID*  address = NULL;
@@ -98,5 +116,21 @@ TEST_CASE ("AllocatePages", "[BumpAllocator]") {
 
         REQUIRE (status == STATUS_OUT_OF_MEMORY);
         REQUIRE (address == NULL);
+    }
+
+    // Just in case
+    SECTION("Free should always succeed") {
+        VOID*  address = NULL;
+        STATUS status = PA_ALLOCATE(&allocator, &address, 1, PAGE_SIZE_4K);
+        REQUIRE(status == STATUS_SUCCESS);
+
+        status = PA_FREE(&allocator, &address, 1);
+        REQUIRE(status == STATUS_SUCCESS);
+        REQUIRE (address == NULL);
+    }
+
+    SECTION("Free cannot be NULL") {
+        STATUS status = PA_FREE(&allocator, NULL, 1);
+        REQUIRE(status == STATUS_INVALID_PARAMETER);
     }
 }

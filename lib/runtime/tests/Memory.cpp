@@ -76,7 +76,7 @@ TEST_CASE ("RtlCopyMemory", "[Memory]") {
         }
     }
 
-    SECTION ("Returns STATUS_SUCCESS on success") {
+    SECTION ("Simple copy") {
         UINT8  src[10] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99 };
         UINT8  dst[10] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
         STATUS status  = RtlCopyMemory (dst, sizeof (dst), src, sizeof (src));
@@ -84,28 +84,35 @@ TEST_CASE ("RtlCopyMemory", "[Memory]") {
         REQUIRE (status == STATUS_SUCCESS);
     }
 
-    SECTION ("Returns STATUS_INVALID_PARAMETER if Destination is NULL") {
+    SECTION ("Make sure to fail if Destination is NULL (STATUS_INVALID_PARAMETER)") {
         UINT8  src[10] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99 };
         STATUS status  = RtlCopyMemory (NULL, 10, src, sizeof (src));
 
         REQUIRE (status == STATUS_INVALID_PARAMETER);
     }
 
-    SECTION ("Returns STATUS_INVALID_PARAMETER if Source is NULL") {
+    SECTION ("Make sure to fail if Source is NULL (STATUS_INVALID_PARAMETER)") {
         UINT8  dst[10] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
         STATUS status  = RtlCopyMemory (dst, sizeof (dst), NULL, 10);
 
         REQUIRE (status == STATUS_INVALID_PARAMETER);
     }
 
-    SECTION ("Returns STATUS_INVALID_PARAMETER if Destination overlaps with Source") {
+    SECTION ("Make sure to fail if Destination overlaps with Source (STATUS_INVALID_PARAMETER)") {
         UINT8  buffer[10] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99 };
         STATUS status     = RtlCopyMemory (buffer + 2, 6, buffer, 6);
 
         REQUIRE (status == STATUS_INVALID_PARAMETER);
     }
 
-    SECTION ("Returns STATUS_BUFFER_TOO_SMALL if DestinationSize is too small for the copy") {
+    SECTION("Make sure to fail if Source overlaps with Destination (STATUS_INVALID_PARAMETER)") {
+        UINT8 buffer[10] = { 0 };
+        STATUS status = RtlCopyMemory (buffer, sizeof (buffer), buffer + 1, sizeof (buffer) - 1);
+
+        REQUIRE (status == STATUS_INVALID_PARAMETER);
+    }
+
+    SECTION ("Make sure to fail if DestinationSize is too small for the copy (STATUS_BUFFER_TOO_SMALL)") {
         UINT8  src[10] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99 };
         UINT8  dst[5];
         STATUS status = RtlCopyMemory (dst, sizeof (dst), src, sizeof (src));

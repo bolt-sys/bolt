@@ -26,7 +26,7 @@ cc_library(
 )
 
 cc_test(
-    name = "tests",
+    name = "common_test",
     # This is a core library, it must be small and fast.
     size = "small",
     timeout = "short",
@@ -36,7 +36,23 @@ cc_test(
         "tests/TypeDefs.cpp",
     ],
     linkstatic = True,
-    shard_count = 6,
+    deps = [
+        ":runtime",
+        "@catch2//:catch2_main",
+    ],
+)
+
+cc_test(
+    name = "allocator_test",
+    # This is a core library, it must be small and fast.
+    size = "small",
+    timeout = "short",
+    srcs = [
+        "source/Memory/SlabAllocatorUtilities.h",
+        "tests/Allocators/BumpAllocator.cpp",
+        "tests/Allocators/SlabAllocatorUtilities.cpp",
+    ],
+    linkstatic = True,
     deps = [
         ":runtime",
         "@catch2//:catch2_main",

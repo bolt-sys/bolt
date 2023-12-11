@@ -2,7 +2,7 @@
 common --enable_bzlmod
 
 # Enable modern C++ features.
-build --cxxopt=-std=c++20
+build --cxxopt=-std=c++17
 build --conlyopt=-std=gnu11
 
 # https://github.com/bazelbuild/bazel/issues/7260

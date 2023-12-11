@@ -115,7 +115,7 @@ prebuilt binaries available for Windows, Linux and macOS. you can find the binar
 
 ## Navigation
 
-To navigate around the codebase, its recommended to
+To navigate around the codebase, it's recommended to
 use [Sourcegraph](https://sourcegraph.com/github.com/bolt-sys/bolt)
 or your IDE's search implementation.
 

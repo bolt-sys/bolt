@@ -20,35 +20,6 @@ git_override(
 )
 
 #
-# C++ Toolchain
-#
-bazel_dep(name = "toolchains_llvm", version = "0.10.3")
-
-git_override(
-    module_name = "toolchains_llvm",
-    commit = "cba5e70a3318ce535597c782422c9c8afe8ee128",
-    remote = "https://github.com/bolt-sys/bazel-toolchain",
-)
-
-# Configure and register the toolchain.
-llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
-
-llvm.toolchain(
-    llvm_versions = {
-        "": "17.0.6",
-        "darwin-aarch64": "17.0.6",
-        "darwin-x86_64": "15.0.7",
-    },
-    sysroot = {
-        "linux-x86_64": "@@org_chromium_sysroot_linux_x64//:sysroot",
-    },
-)
-
-use_repo(llvm, "llvm_toolchain")
-
-register_toolchains("@llvm_toolchain//:all")
-
-#
 # Testing
 #
 bazel_dep(name = "catch2", version = "3.4.0")

@@ -7,5 +7,6 @@ refresh_compile_commands(
         "//lib/runtime:runtime": "",
         "//lib/runtime:common_test": "--platforms=@local_config_platform//:host --test_sharding_strategy=explicit --test_output=errors --sandbox_default_allow_network=false",
         "//lib/runtime:allocator_test": "--platforms=@local_config_platform//:host --test_sharding_strategy=explicit --test_output=errors --sandbox_default_allow_network=false",
+        "//lib/compat_c:compat_c": "",
     },
 )

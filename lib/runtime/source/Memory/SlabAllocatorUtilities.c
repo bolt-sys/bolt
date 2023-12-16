@@ -25,6 +25,9 @@ AllocateEmptySlab (
         goto Exit;
     }
 
+    // it is not guaranteed that PA_ALLOCATE will zero the memory
+    RtlZeroMemory (Slab, sizeof (SLAB));
+
     Slab->FreeMap    = (VOID*)(Slab + 1);
     Slab->FreeMapEnd = ((VOID*)Slab) + (SlabPages * PAGE_SIZE_4K);
     Slab->Data       = (VOID*)Slab->FreeMapEnd;

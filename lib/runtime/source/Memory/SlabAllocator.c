@@ -45,7 +45,7 @@ RtlCreateSlabCache (
 
     Status = STATUS_SUCCESS;
 
-    if ((Cache == NULL) || (ObjectSize == 0)) {
+    if ((Cache == NULL) || (ObjectSize == 0) || (BaseAllocator == NULL)) {
         Status = STATUS_INVALID_PARAMETER;
         goto Exit;
     }
@@ -275,6 +275,10 @@ RtlSlabFree (
     }
 
 Exit:
+    if (SUCCEEDED (Status)) {
+        *Object = NULL;
+    }
+
     return Status;
 }
 

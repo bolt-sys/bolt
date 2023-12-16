@@ -31,7 +31,8 @@ RUN wget ${BUILDTOOLS_BUILDIFIER_URL} -O /bin/buildifier && \
 RUN apt-get install -y \
     build-essential \
     bash-completion \
-    gdb
+    gdb             \
+    lcov
 
 #
 # Bash Completion

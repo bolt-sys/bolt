@@ -161,4 +161,16 @@ TEST_CASE ("FreePages", "[BumpAllocator]") {
         STATUS status = PA_FREE(&allocator, NULL, 1, PAGE_SIZE_4K);
         REQUIRE(status == STATUS_INVALID_PARAMETER);
     }
+
+    SECTION("Free cannot be zero") {
+        VOID*  address = NULL;
+        STATUS status = PA_ALLOCATE(&allocator, &address, 1, PAGE_SIZE_4K);
+        REQUIRE(status == STATUS_SUCCESS);
+
+        status = PA_FREE(&allocator, &address, 0, PAGE_SIZE_4K);
+        REQUIRE(status == STATUS_INVALID_PARAMETER);
+    }
+
+    delete[] (UINT8*)allocator.bumpers[0].heap_start;
+    delete[] (UINT8*)allocator.bumpers[1].heap_start;
 }

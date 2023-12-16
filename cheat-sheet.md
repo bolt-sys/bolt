@@ -7,7 +7,7 @@
 To generate a code coverage report, run the following command:
 
 ```shell
-bazel coverage -c dbg --nocache_test_results --combined_report=lcov //...
+bazel coverage -c dbg --nocache_test_results --combined_report=lcov //lib/runtime:all
 ```
 
 To view the report

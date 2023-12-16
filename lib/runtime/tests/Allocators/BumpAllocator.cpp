@@ -143,7 +143,7 @@ TEST_CASE ("FreePages", "[BumpAllocator]") {
     allocator.bumpers[1].next       = allocator.bumpers[1].heap_start;
 
     SECTION("Make sure we cannot free while using NULL as Self") {
-        STATUS status = allocator.FreePages(NULL, NULL, 1);
+        STATUS status = allocator.FreePages(NULL, NULL, 1, PAGE_SIZE_4K);
         assert(status == STATUS_NOT_INITIALIZED);
     }
 
@@ -152,13 +152,13 @@ TEST_CASE ("FreePages", "[BumpAllocator]") {
         STATUS status = PA_ALLOCATE(&allocator, &address, 1, PAGE_SIZE_4K);
         REQUIRE(status == STATUS_SUCCESS);
 
-        status = PA_FREE(&allocator, &address, 1);
+        status = PA_FREE(&allocator, &address, 1, PAGE_SIZE_4K);
         REQUIRE(status == STATUS_SUCCESS);
         REQUIRE (address == NULL);
     }
 
     SECTION("Free cannot be NULL") {
-        STATUS status = PA_FREE(&allocator, NULL, 1);
+        STATUS status = PA_FREE(&allocator, NULL, 1, PAGE_SIZE_4K);
         REQUIRE(status == STATUS_INVALID_PARAMETER);
     }
 }

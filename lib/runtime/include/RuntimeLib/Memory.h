@@ -48,6 +48,8 @@ STATUS
  * @param[in]     Self    The allocator to use
  * @param[in,out] Address The address of the allocated memory
  * @param[in]     Pages   The amount of pages to free
+ * @param[in]     Align   The alignment of the allocation
+ *                        must be (PAGE_SIZE_4K, PAGE_SIZE_2M, PAGE_SIZE_1G)
  *
  * @return STATUS_SUCCESS              The free was successful
  * @return STATUS_INVALID_PARAMETER    Address is NULL or Pages is 0
@@ -69,7 +71,8 @@ STATUS
 (* PA_FREE_PAGES)(
     IN     PAGE_ALLOCATOR* Self,
     IN OUT VOID**          Address,
-    IN     UINTN           Pages
+    IN     UINTN           Pages,
+    IN     UINTN           Align
     );
 
 // A simple allocators struct must look like this:
@@ -116,8 +119,8 @@ typedef struct _PAGE_ALLOCATOR {
  *
  * @return Status code from the allocator's FreePages function.
  */
-#define PA_FREE(_Allocator, _Address, _Pages) \
-    ((PAGE_ALLOCATOR*)_Allocator)->FreePages (((PAGE_ALLOCATOR *)(_Allocator)), (_Address), (_Pages))
+#define PA_FREE(_Allocator, _Address, _Pages, _Align) \
+    ((PAGE_ALLOCATOR*)_Allocator)->FreePages (((PAGE_ALLOCATOR *)(_Allocator)), (_Address), (_Pages), (_Align))
 
 // ------------------------------------------------------------------ Constants
 

@@ -1,5 +1,5 @@
 {
-	"name": "Ubuntu",
+	"name": "Bolt",
 	"build": {
 		"args": {
 			"BAZELISK_VERSION": "v1.19.0",
@@ -9,9 +9,27 @@
 	},
 	"customizations": {
 		"vscode": {
+			"extensions": [
+				"jeff-hykin.better-cpp-syntax",
+				"ms-vscode.cpptools-extension-pack",
+				"wmaurer.change-case",
+				"llvm-vs-code-extensions.vscode-clangd",
+				"streetsidesoftware.code-spell-checker",
+				"vadimcn.vscode-lldb",
+				"ms-vscode.hexeditor",
+				"mutantdino.resourcemonitor",
+				"shardulm94.trailing-spaces",
+				"gruntfuggly.todo-tree",
+				"zachflower.uncrustify",
+				"bazelbuild.vscode-bazel",
+				"github.vscode-github-actions",
+				"github.codespaces",
+				"ms-azuretools.vscode-docker",
+				"timonwong.shellcheck"
+			],
 			"settings": {
 				"uncrustify.configPath.linux": "uncrustify.cfg",
-				"uncrustify.executablePath.linux": "./prebuilt/linux/uncrustify"
+				"uncrustify.executablePath.linux": "/workspaces/bolt/prebuilt/linux-x86/bin/uncrustify"
 			}
 		}
 	},

@@ -48,6 +48,77 @@ Exit:
 }
 
 /**
+ * @brief Destroys a slab.
+ *
+ * @note This function will destroy the slab and free the memory used by it
+ *       but it will not remove itself from the list it is in, thus the caller
+ *       must ensure that the slab is removed from the list before calling this
+ *
+ * @param[in,out] Slab The slab to destroy.
+ *
+ * @return STATUS_SUCCESS on success.
+ **/
+STATUS
+SYSAPI
+DestroySlab (
+    IN OUT SLAB* Slab
+    )
+{
+    STATUS Status;
+    UINTN SlabPages;
+    UINTN SlabDataPages;
+    SLAB_CACHE* Cache;
+
+    Status = STATUS_SUCCESS;
+
+    Cache = Slab->Cache;
+
+    SlabPages     = ALIGN_UP (sizeof (SLAB), PAGE_SIZE_4K) / PAGE_SIZE_4K;
+    SlabDataPages = ALIGN_UP ((Cache->ObjectSize * Cache->ObjectCount), PAGE_SIZE_4K) / PAGE_SIZE_4K;
+
+    if (Slab == NULL) {
+        Status = STATUS_INVALID_PARAMETER;
+        goto Exit;
+    }
+
+    //
+    // Destroy all objects inside
+    //
+    for (UINTN i = 0; i < Cache->ObjectCount; i++) {
+        Status = FreeObjectInSlab(Slab, Cache->Flags, i);
+        if (FAILED (Status)) {
+            goto Exit;
+        }
+    }
+
+    //
+    // Remove ourselves from the list
+    //
+    if (Slab->Prev != NULL) {
+        Slab->Prev->Next = Slab->Next;
+    }
+
+    if (Slab->Next != NULL) {
+        Slab->Next->Prev = Slab->Prev;
+    }
+
+    if (Cache->Empty == Slab) {
+        Cache->Empty = Slab->Next;
+    }
+
+    //
+    // Free the slab
+    //
+    Status = PA_FREE (Slab->Cache->BaseAllocator, (VOID**)&Slab, SlabPages + SlabDataPages, PAGE_SIZE_4K);
+    if (FAILED (Status)) {
+        goto Exit;
+    }
+
+Exit:
+    return Status;
+}
+
+/**
  * @brief Moves a slab from one list to another.
  *
  * @param[in,out] Slab The slab to move.
@@ -339,6 +410,13 @@ FreeObjectInSlab (
     if (Slab == NULL) {
         Status = STATUS_INVALID_PARAMETER;
         goto Exit;
+    }
+
+    //
+    // Check if the object is already free
+    //
+    if (BIT_IS_CLEAR (Slab->FreeMap[Bit / 8], Bit % 8)) {
+        goto Exit; // No need to error out, this is a valid case
     }
 
     //

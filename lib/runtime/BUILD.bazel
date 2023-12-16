@@ -51,6 +51,7 @@ cc_test(
     srcs = [
         "source/Memory/SlabAllocatorUtilities.h",
         "tests/Allocators/BumpAllocator.cpp",
+        "tests/Allocators/SlabAllocator.cpp",
         "tests/Allocators/SlabAllocatorUtilities.cpp",
     ],
     linkstatic = True,

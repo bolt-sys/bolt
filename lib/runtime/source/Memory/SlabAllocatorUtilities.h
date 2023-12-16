@@ -9,6 +9,19 @@ AllocateEmptySlab (
     );
 
 /**
+ * @brief Destroys a slab.
+ *
+ * @param[in,out] Slab The slab to destroy.
+ *
+ * @return STATUS_SUCCESS on success.
+ **/
+STATUS
+SYSAPI
+DestroySlab (
+    IN OUT SLAB* Slab
+    );
+
+/**
  * @brief Moves a slab from one list to another.
  *
  * @param[in,out] Slab The slab to move.
@@ -84,6 +97,8 @@ FindSlabForObject (
     OUT SLAB**     Slab,
     OUT UINTN*     Bit
     );
+
+#define INTERNAL_SLAB_ALLOCATOR_FLAGS_DO_NOT_REMOVE_FROM_LIST BIT(63)
 
 STATUS
 SYSAPI

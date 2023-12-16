@@ -73,6 +73,8 @@ RtlCreateSlabCache (
     CachePtr->ObjectCount   = MAX (ObjectCount, MINIMUM_OBJECT_COUNT);
     CachePtr->Flags         = Flags;
     CachePtr->Empty         = NULL;
+    CachePtr->Partial       = NULL;
+    CachePtr->Full          = NULL;
     CachePtr->Ctor          = Ctor;
     CachePtr->Dtor          = Dtor;
     CachePtr->BaseAllocator = BaseAllocator;
@@ -113,13 +115,42 @@ RtlDestroySlabCache (
         goto Exit;
     }
 
-    if (CachePtr->ObjectCount != 0) {
-        // TODO: Destroy all objects, then free the cache
-        Status = STATUS_NOT_IMPLEMENTED;
-        goto Exit;
+    if (CachePtr->Empty != NULL || CachePtr->Partial != NULL || CachePtr->Full != NULL) {
+        SLAB* Slab;
+        SLAB* Next;
+
+        //
+        // Free full slabs
+        //
+        Slab = CachePtr->Full;
+        while (Slab != NULL) {
+            Next = Slab->Next; // Save the next slab
+            DestroySlab(Slab);
+            Slab = Next;
+        }
+
+        //
+        // Free partial slabs
+        //
+        Slab = CachePtr->Partial;
+        while (Slab != NULL) {
+            Next = Slab->Next;
+            DestroySlab(Slab);
+            Slab = Next;
+        }
+
+        //
+        // Free empty slabs
+        //
+        Slab = CachePtr->Empty;
+        while (Slab != NULL) {
+            Next = Slab->Next;
+            DestroySlab(Slab);
+            Slab = Next;
+        }
     }
 
-    Status = PA_FREE (CachePtr->BaseAllocator, (VOID**)Cache, 1);
+    Status = PA_FREE (CachePtr->BaseAllocator, (VOID**)Cache, 1, PAGE_SIZE_4K);
     if (FAILED (Status)) {
         goto Exit;
     }

@@ -4,7 +4,7 @@
     #error "This file should be included from RuntimeLib.h"
 #endif
 
-#define SLAB_CACHE_FLAGS_NONE BIT(0)
+#define SLAB_CACHE_FLAGS_NONE 0
 #define SLAB_CACHE_FLAGS_ZERO BIT(1)
 
 typedef struct _SLAB_CACHE SLAB_CACHE;

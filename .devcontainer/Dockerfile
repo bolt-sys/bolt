@@ -30,7 +30,15 @@ RUN wget ${BUILDTOOLS_BUILDIFIER_URL} -O /bin/buildifier && \
 #
 RUN apt-get install -y \
     build-essential \
-    bash-completion
+    bash-completion \
+    gdb
+
+#
+# Bash Completion
+#
+RUN curl -fsSL https://raw.githubusercontent.com/bazelbuild/bazel/7.0.0/scripts/bazel-complete-header.bash >> /etc/bash_completion.d/bazel && \
+    curl -fsSL https://raw.githubusercontent.com/bazelbuild/bazel/7.0.0/scripts/bazel-complete-template.bash >> /etc/bash_completion.d/bazel && \
+    bazel help completion >> /etc/bash_completion.d/bazel
 
 #
 # Cleanup

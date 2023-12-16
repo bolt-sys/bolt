@@ -22,6 +22,10 @@ build:asan --copt -g
 build:asan --copt -fno-omit-frame-pointer
 build:asan --linkopt -fsanitize=address
 
+# Skip ASAN for stuff that doesn't work with it. E.G. the kernel.
+# as it requires special treatment.
+build:asan --build_tag_filters=^no_asan
+
 # User-specific .bazelrc
 try-import %workspace%/user.bazelrc
 

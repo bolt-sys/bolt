@@ -71,6 +71,9 @@ nasm_cc_binary(
         r"$(location x86_64-unknown-elf.ld)",
     ],
     linkstatic = True,
+    tags = [
+        "no_asan",
+    ],
     target_compatible_with = [
         # The kernel can only be built on a linux machine (or cross-compiled from macos)
         "@platforms//os:linux",

@@ -4,6 +4,8 @@
     #error "This file should be included from RuntimeLib.h"
 #endif
 
+#define MAXIMUM_BUMPERS 512
+
 typedef struct {
     UINTN heap_start;
     UINTN heap_end;
@@ -16,7 +18,7 @@ typedef struct {
     PA_FREE_PAGES     FreePages;
 
     // Bump allocator specific
-    BUMPER            bumpers[512];
+    BUMPER            bumpers[MAXIMUM_BUMPERS];
 } BUMP_ALLOCATOR;
 
 /**

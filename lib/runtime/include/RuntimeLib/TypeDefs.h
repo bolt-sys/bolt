@@ -84,8 +84,6 @@ EXTERN_C_START
 typedef VOID*        HANDLE;
 #define NULL_HANDLE ((HANDLE) NULL)
 
-typedef unsigned int STATUS;
-
 // --------------------------------------------------------------------- Macros
 
 #define STRINGIFY(_X)                               #_X

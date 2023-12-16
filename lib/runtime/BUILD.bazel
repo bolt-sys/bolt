@@ -31,6 +31,7 @@ cc_test(
     size = "small",
     timeout = "short",
     srcs = [
+        "tests/Error.cpp",
         "tests/GUID.cpp",
         "tests/Memory.cpp",
         "tests/TypeDefs.cpp",

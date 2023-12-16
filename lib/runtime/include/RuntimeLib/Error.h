@@ -12,6 +12,8 @@
  *  +-------------+-------------+--------------+-------------+
  *  | 30          | 29          | 16           | 0           | << Position
  *  +-------------+-------------+--------------+-------------+
+ *  | 0x3         | 0x1         | 0x2000       | 0xFFFF      | << Max
+ *  +-------------+-------------+--------------+-------------+
  *
  * The Severity field indicates the severity level of the error, such as success, informational, warning, or error.
  * The UserDefined field is reserved for application-defined error codes.
@@ -57,13 +59,13 @@
 
 EXTERN_C_START
 
-#define STATUS_SEVERITY_ERROR_MASK     (0x0003 << 30)
-#define STATUS_USERDEFINED_MASK        (0x0001 << 29)
-#define STATUS_FACILITY_MASK           (0xFFFF << 16)
-#define STATUS_ERROR_CODE_MASK         (0x7FFF << 0)
-
 #define COMBINE_STATUS(_Severity, _UserDefined, _Facility, _ErrorCode) \
-    ((((STATUS)_Severity) << 31) | (((STATUS)_UserDefined) << 30) | (((STATUS)_Facility) << 16) | ((STATUS)_ErrorCode))
+    (\
+          (((STATUS)_Severity)    << 30)\
+        | (((STATUS)_UserDefined) << 29)\
+        | (((STATUS)_Facility)    << 16)\
+        | (((STATUS)_ErrorCode)   <<  0)\
+    )
 
 #define STATUS_SEVERITY_SUCCESS        0b00
 #define STATUS_SEVERITY_INFORMATIONAL  0b01
@@ -76,10 +78,10 @@ EXTERN_C_START
 #define STATUS_FACILITY_RESERVED_BEGIN 0x0
 #define STATUS_FACILITY_RESERVED_END   0xFF
 
-#define STATUS_SEVERITY(_Status)    ((_Status & STATUS_SEVERITY_ERROR_MASK) >> 31)
-#define STATUS_USERDEFINED(_Status) ((_Status & STATUS_USERDEFINED_MASK)    >> 30)
-#define STATUS_FACILITY(_Status)    ((_Status & STATUS_FACILITY_MASK)       >> 16)
-#define STATUS_ERROR_CODE(_Status)  ((_Status & STATUS_ERROR_CODE_MASK)     >>  0)
+#define STATUS_SEVERITY(_Status)     ((_Status)  >> 30)
+#define STATUS_USER_DEFINED(_Status) (((_Status) >> 29) & 0x1)
+#define STATUS_FACILITY(_Status)     (((_Status) >> 16) & 0x1FFF)
+#define STATUS_ERROR_CODE(_Status)   ((_Status)         & 0xFFFF)
 
 #define IS_SUCCESS(_Status)         (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_SUCCESS)
 #define IS_WARNING(_Status)         (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_WARNING)

@@ -115,7 +115,7 @@ RtlDestroySlabCache (
         goto Exit;
     }
 
-    if (CachePtr->Empty != NULL || CachePtr->Partial != NULL || CachePtr->Full != NULL) {
+    if ((CachePtr->Empty != NULL) || (CachePtr->Partial != NULL) || (CachePtr->Full != NULL)) {
         SLAB* Slab;
         SLAB* Next;
 
@@ -125,7 +125,7 @@ RtlDestroySlabCache (
         Slab = CachePtr->Full;
         while (Slab != NULL) {
             Next = Slab->Next; // Save the next slab
-            DestroySlab(Slab);
+            DestroySlab (Slab);
             Slab = Next;
         }
 
@@ -135,7 +135,7 @@ RtlDestroySlabCache (
         Slab = CachePtr->Partial;
         while (Slab != NULL) {
             Next = Slab->Next;
-            DestroySlab(Slab);
+            DestroySlab (Slab);
             Slab = Next;
         }
 
@@ -145,7 +145,7 @@ RtlDestroySlabCache (
         Slab = CachePtr->Empty;
         while (Slab != NULL) {
             Next = Slab->Next;
-            DestroySlab(Slab);
+            DestroySlab (Slab);
             Slab = Next;
         }
     }

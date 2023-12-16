@@ -67,9 +67,9 @@ DestroySlab (
     IN OUT SLAB* Slab
     )
 {
-    STATUS Status;
-    UINTN SlabPages;
-    UINTN SlabDataPages;
+    STATUS      Status;
+    UINTN       SlabPages;
+    UINTN       SlabDataPages;
     SLAB_CACHE* Cache;
 
     Status = STATUS_SUCCESS;
@@ -88,7 +88,7 @@ DestroySlab (
     // Destroy all objects inside
     //
     for (UINTN i = 0; i < Cache->ObjectCount; i++) {
-        Status = FreeObjectInSlab(Slab, Cache->Flags, i);
+        Status = FreeObjectInSlab (Slab, Cache->Flags, i);
         if (FAILED (Status)) {
             goto Exit;
         }

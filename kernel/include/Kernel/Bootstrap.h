@@ -5,6 +5,6 @@
 #endif
 
 VOID
-CommonStartupRoutine(
-    PAGE_ALLOCATOR *BumpAllocator
+CommonStartupRoutine (
+    PAGE_ALLOCATOR* BumpAllocator
     );

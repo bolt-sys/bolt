@@ -81,7 +81,7 @@ EXTERN_C_START
 
 // ------------------------------------------------------------------- Typedefs
 
-typedef VOID*        HANDLE;
+typedef VOID* HANDLE;
 #define NULL_HANDLE ((HANDLE) NULL)
 
 // --------------------------------------------------------------------- Macros

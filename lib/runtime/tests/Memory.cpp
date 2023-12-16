@@ -105,9 +105,9 @@ TEST_CASE ("RtlCopyMemory", "[Memory]") {
         REQUIRE (status == STATUS_INVALID_PARAMETER);
     }
 
-    SECTION("Make sure to fail if Source overlaps with Destination (STATUS_INVALID_PARAMETER)") {
-        UINT8 buffer[10] = { 0 };
-        STATUS status = RtlCopyMemory (buffer, sizeof (buffer), buffer + 1, sizeof (buffer) - 1);
+    SECTION ("Make sure to fail if Source overlaps with Destination (STATUS_INVALID_PARAMETER)") {
+        UINT8  buffer[10] = { 0 };
+        STATUS status     = RtlCopyMemory (buffer, sizeof (buffer), buffer + 1, sizeof (buffer) - 1);
 
         REQUIRE (status == STATUS_INVALID_PARAMETER);
     }

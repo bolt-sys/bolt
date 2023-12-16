@@ -83,15 +83,15 @@ EXTERN_C_START
 #define STATUS_FACILITY(_Status)     (((_Status) >> 16) & 0x1FFF)
 #define STATUS_ERROR_CODE(_Status)   ((_Status)         & 0xFFFF)
 
-#define IS_SUCCESS(_Status)         (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_SUCCESS)
-#define IS_WARNING(_Status)         (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_WARNING)
-#define IS_INFORMATIONAL(_Status)   (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_INFORMATIONAL)
-#define IS_ERROR(_Status)           (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_ERROR)
+#define IS_SUCCESS(_Status)          (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_SUCCESS)
+#define IS_WARNING(_Status)          (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_WARNING)
+#define IS_INFORMATIONAL(_Status)    (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_INFORMATIONAL)
+#define IS_ERROR(_Status)            (STATUS_SEVERITY(_Status) == STATUS_SEVERITY_ERROR)
 
-#define SUCCEEDED(_Status)          (IS_SUCCESS(_Status) || IS_INFORMATIONAL(_Status) || IS_WARNING(_Status))
-#define FAILED(_Status)             (IS_ERROR(_Status))
+#define SUCCEEDED(_Status)           (IS_SUCCESS(_Status) || IS_INFORMATIONAL(_Status) || IS_WARNING(_Status))
+#define FAILED(_Status)              (IS_ERROR(_Status))
 
-#define QUICK_CHECK(_F)             Status = (_F); if (FAILED(Status)) { goto Exit; }
+#define QUICK_CHECK(_F)              Status = (_F); if (FAILED(Status)) { goto Exit; }
 
 // -------------------------------------------------------------------- Generic
 

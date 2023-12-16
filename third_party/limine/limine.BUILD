@@ -13,3 +13,12 @@ cc_library(
         "limine.h",
     ],
 )
+
+cc_binary(
+    name = "limine_deploy",
+    srcs = [
+        "limine.c",
+        "limine.h",
+        "limine-bios-hdd.h",
+    ],
+)

@@ -109,7 +109,7 @@ def _image_impl(ctx):
 image = rule(
     implementation = _image_impl,
     attrs = {
-        "_limine_tool": attr.label(cfg = "exec", default = Label("//tools/limine"), doc = "The limine tool to use to install limine on HDD images.", executable = True),
+        "_limine_tool": attr.label(cfg = "exec", default = Label("@limine//:limine_deploy"), doc = "The limine tool to use to install limine on HDD images.", executable = True),
         "_xorriso_tool": attr.label(cfg = "exec", default = Label("@xorriso//:xorriso"), doc = "The xorriso tool to use to create ISO images.", executable = True),
         "srcs": attr.label_list(allow_files = True, mandatory = True, doc = "The files to include in the image."),
         "type": attr.string(mandatory = True, default = "iso", values = ["iso", "hdd"], doc = "The type of image to create."),

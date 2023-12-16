@@ -12,7 +12,9 @@ TEST_CASE ("AllocatePages", "[BumpAllocator]") {
 
     RtlBumpAllocatorInitialize (&allocator);
 
+    //
     // Setup code
+    //
     allocator.bumpers[0].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K];
     allocator.bumpers[0].heap_end   = allocator.bumpers[0].heap_start + PAGE_SIZE_4K;
     allocator.bumpers[0].next       = allocator.bumpers[0].heap_start;
@@ -26,11 +28,6 @@ TEST_CASE ("AllocatePages", "[BumpAllocator]") {
         STATUS status  = allocator.AllocatePages(NULL, &address, 1, PAGE_SIZE_4K);
 
         assert(address == NULL);
-        assert(status == STATUS_NOT_INITIALIZED);
-    }
-
-    SECTION("Make sure we cannot free while using NULL as Self") {
-        STATUS status = allocator.FreePages(NULL, NULL, 1);
         assert(status == STATUS_NOT_INITIALIZED);
     }
 
@@ -118,7 +115,38 @@ TEST_CASE ("AllocatePages", "[BumpAllocator]") {
         REQUIRE (address == NULL);
     }
 
-    // Just in case
+    //
+    // Cleanup code
+    //
+    delete[] (UINT8*)allocator.bumpers[0].heap_start;
+    delete[] (UINT8*)allocator.bumpers[1].heap_start;
+}
+
+// Just in case
+TEST_CASE ("FreePages", "[BumpAllocator]") {
+    BUMP_ALLOCATOR allocator { };
+
+    SECTION("Make sure allocator cannot be NULL") {
+        STATUS status = RtlBumpAllocatorInitialize (NULL);
+        REQUIRE (status == STATUS_INVALID_PARAMETER);
+    }
+
+    RtlBumpAllocatorInitialize (&allocator);
+
+    // Setup code
+    allocator.bumpers[0].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K];
+    allocator.bumpers[0].heap_end   = allocator.bumpers[0].heap_start + PAGE_SIZE_4K;
+    allocator.bumpers[0].next       = allocator.bumpers[0].heap_start;
+
+    allocator.bumpers[1].heap_start = (UINTN) new UINT8[PAGE_SIZE_4K * 2];
+    allocator.bumpers[1].heap_end   = allocator.bumpers[1].heap_start + PAGE_SIZE_4K * 2;
+    allocator.bumpers[1].next       = allocator.bumpers[1].heap_start;
+
+    SECTION("Make sure we cannot free while using NULL as Self") {
+        STATUS status = allocator.FreePages(NULL, NULL, 1);
+        assert(status == STATUS_NOT_INITIALIZED);
+    }
+
     SECTION("Free should always succeed") {
         VOID*  address = NULL;
         STATUS status = PA_ALLOCATE(&allocator, &address, 1, PAGE_SIZE_4K);

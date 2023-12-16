@@ -29,7 +29,8 @@ RUN wget ${BUILDTOOLS_BUILDIFIER_URL} -O /bin/buildifier && \
 # Packages
 #
 RUN apt-get install -y \
-    build-essential
+    build-essential \
+    bash-completion
 
 #
 # Cleanup

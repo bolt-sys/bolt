@@ -7,5 +7,13 @@
 		},
 		"dockerfile": "Dockerfile"
 	},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"uncrustify.configPath.linux": "uncrustify.cfg",
+				"uncrustify.executablePath.linux": "./prebuilt/linux/uncrustify"
+			}
+		}
+	},
 	"features": {}
 }

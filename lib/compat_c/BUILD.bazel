@@ -1,0 +1,15 @@
+"""
+Compatibility library third-party C code.
+"""
+
+cc_library(
+    name = "compat_c",
+    hdrs = [
+        "include/stdint.h",
+    ],
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/runtime",
+    ],
+)

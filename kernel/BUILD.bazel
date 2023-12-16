@@ -4,8 +4,10 @@ nasm_cc_binary(
     name = "kernel",
     srcs = [
         "include/Kernel.h",
+        "include/Kernel/Bootstrap.h",
         "include/Kernel/X64/GDT.h",
         "include/Kernel/X64/IDT.h",
+        "source/Bootstrap/Common.c",
         "source/Bootstrap/Limine.c",
         "source/Main.c",
         "source/X64/GDT.c",
@@ -84,6 +86,7 @@ nasm_cc_binary(
         "//visibility:public",
     ],
     deps = [
+        "//lib/compat_c",
         "//lib/runtime",
         "@limine",
     ],

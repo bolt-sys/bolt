@@ -13,7 +13,6 @@ def _image_impl(ctx):
     limine_tool = ctx.executable._limine_tool
 
     filename = ctx.attr.name + "." + type
-    print("Creating image: " + filename)
 
     # TODO: add more complicated logic, like different folders.
 

@@ -1,17 +1,9 @@
-# https://github.com/bazelbuild/bazel/issues/18958
-common --enable_bzlmod
-
 # Enable modern C++ features.
 build --cxxopt=-std=c++17
 build --conlyopt=-std=gnu11
 
-# https://github.com/bazelbuild/bazel/issues/7260
-build --incompatible_enable_cc_toolchain_resolution
-
-# Improve performance for hermetic builds.
-# https://github.com/bazelbuild/bazel/issues/8230#issuecomment-1129264658
-# https://github.com/aspect-build/gcc-toolchain/issues/85#issue-1340427935
-build --experimental_reuse_sandbox_directories
+# Weird linker behavior, must manually specify :/
+build --linkopt=-fuse-ld=gold
 
 # Tests are usually written for the host platform, just simpler to deal with.
 test --platforms=@local_config_platform//:host
@@ -19,16 +11,6 @@ test --test_sharding_strategy=explicit
 test --test_verbose_timeout_warnings
 test --test_output=errors
 test --sandbox_default_allow_network=false
-
-# Remote cache
-build --bes_results_url=https://app.buildbuddy.io/invocation/
-build --bes_backend=grpcs://remote.buildbuddy.io
-build --remote_cache=grpcs://remote.buildbuddy.io
-build --remote_download_toplevel
-build --remote_timeout=3600
-build --experimental_remote_cache_compression
-build --experimental_remote_build_event_upload=minimal
-build --slim_profile --experimental_profile_include_target_label --legacy_important_outputs
 
 # User-specific .bazelrc
 try-import %workspace%/user.bazelrc

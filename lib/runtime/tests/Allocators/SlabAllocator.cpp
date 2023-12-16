@@ -220,6 +220,16 @@ TEST_CASE("RtlSlabAllocate", "[SlabAllocator]") {
         REQUIRE(Cache->Partial == NULL);
     }
 
+    SECTION("Free with invalid arguments") {
+        UINTN* Object = NULL;
+
+        Status = RtlSlabFree(NULL, SLAB_CACHE_FLAGS_NONE, (VOID**)&Object);
+        REQUIRE(Status == STATUS_INVALID_PARAMETER);
+
+        Status = RtlSlabFree(Cache, SLAB_CACHE_FLAGS_NONE, NULL);
+        REQUIRE(Status == STATUS_INVALID_PARAMETER);
+    }
+
     //
     // Teardown
     //

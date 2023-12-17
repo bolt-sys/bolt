@@ -32,6 +32,9 @@ StartupRoutine (
     GDTInit ();
     IDTInit ();
 
+    //
+    // Initialize the bump allocator
+    //
     BumperIdx = 0;
     for (UINT64 i = 0; i < g_LimineMemmap.response->entry_count; i++) {
         if (g_LimineMemmap.response->entries[i]->type == LIMINE_MEMMAP_USABLE) {
@@ -50,5 +53,13 @@ StartupRoutine (
         }
     }
 
+    RtlBumpAllocatorInitialize (&g_BumpAllocator);
+
+    //
+    // Enter the common startup routine
+    //
+    // This is basically; cross-architecture, cross-platform and cross-bootloader
+    // initialization.
+    //
     CommonStartupRoutine ((PAGE_ALLOCATOR*)&g_BumpAllocator);
 }

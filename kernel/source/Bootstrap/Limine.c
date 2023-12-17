@@ -32,6 +32,9 @@ StartupRoutine (
     GDTInit ();
     IDTInit ();
 
+    // Because memory is uninitialized, we dont know if the memory is zeroed or not.
+    RtlZeroMemory (&g_BumpAllocator, sizeof (g_BumpAllocator));
+
     //
     // Initialize the bump allocator
     //

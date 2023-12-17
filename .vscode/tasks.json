@@ -1,0 +1,66 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build_dbg_cdimage",
+            "type": "process",
+            "command": "bazel",
+            "args": [
+                "build",
+                "-c",
+                "dbg",
+                "//image:cd"
+            ],
+            "problemMatcher": [
+                "$gcc",
+                // $bazel
+                {
+                    "pattern": [
+                        {
+                            "regexp": "^(.*)ERROR: (.*)$",
+                            "file": 1,
+                            "message": 2,
+                            "location": 1
+                        }
+                    ]
+                },
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "launch_qemu-x64",
+            "type": "shell",
+            "command": "${workspaceFolder}/.vscode/tasks/qemu_wrapper.sh",
+            "dependsOn": [
+                "build_dbg_cdimage"
+            ],
+            "presentation": {
+                "echo": false,
+                "focus": true,
+                "panel": "shared",
+                "clear": true
+            },
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": ".",
+                    }
+                }
+            ]
+        }
+    ]
+}

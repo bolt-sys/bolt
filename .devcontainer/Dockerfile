@@ -32,7 +32,8 @@ RUN apt-get install -y \
     build-essential \
     bash-completion \
     gdb             \
-    lcov
+    lcov            \
+    qemu-system
 
 #
 # Bash Completion

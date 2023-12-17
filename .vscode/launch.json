@@ -5,6 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch QEMU (X64)",
+            "type": "lldb",
+            "preLaunchTask": "launch_qemu-x64",
+            "request": "attach",
+            "program": "${workspaceFolder}/bazel-bin/kernel/kernel",
+            "targetCreateCommands": [
+                "target create \"bazel-bin/kernel/kernel\""
+            ],
+            "processCreateCommands": [
+                "gdb-remote localhost:1234"
+            ],
+            "sourceMap": {
+                "/proc/self/cwd": "${workspaceFolder}"
+            }
+        },
+        {
             "name": "Debug //lib/runtime:allocator_test",
             "type": "cppdbg",
             "request": "launch",

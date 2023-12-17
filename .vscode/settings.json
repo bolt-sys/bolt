@@ -15,5 +15,8 @@
   "[cpp]": {
     "editor.defaultFormatter": "zachflower.uncrustify"
   },
-  "cSpell.words": ["SYSAPI"]
+  "cSpell.words": [
+    "SYSAPI"
+  ],
+  "lldb.verboseLogging": true
 }

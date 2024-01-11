@@ -47,7 +47,7 @@ StartupRoutine (
             bumper->next       = bumper->heap_start;
 
             if (BumperIdx == MAXIMUM_BUMPERS) {
-                // Memory is too fragmented, we can't continue. This is fine but we'll use
+                // Memory is too fragmented, we can't continue. This is fine but we'll lose
                 // some usable memory.
 
                 // TODO: log warning

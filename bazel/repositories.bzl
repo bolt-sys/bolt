@@ -4,10 +4,10 @@ def data_dependency():
     http_archive(
         name = "limine",
         build_file = "//:third_party/limine/limine.BUILD",
-        sha256 = "a70f9b7e7788474bc5c55fc57a46afa3ef072654b76a81495c696192b902eb04",
-        strip_prefix = "limine-5.20231124.0-binary",
+        sha256 = "795a64c76053b7902c970a62b226fa78e298214fe6b52f96d36baf88b4f3789e",
+        strip_prefix = "limine-6.20240107.0-binary",
         urls = [
-            "https://github.com/limine-bootloader/limine/archive/refs/tags/v5.20231124.0-binary.tar.gz",
+            "https://github.com/limine-bootloader/limine/archive/refs/tags/v6.20240107.0-binary.tar.gz",
         ],
     )
 

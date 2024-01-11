@@ -23,7 +23,7 @@ git_override(
 #
 bazel_dep(name = "rules_cc", version = "0.0.9")
 bazel_dep(name = "rules_foreign_cc", version = "0.10.1")
-bazel_dep(name = "rules_python", version = "0.27.1")
+bazel_dep(name = "rules_python", version = "0.28.0")
 
 #
 # Python
@@ -39,7 +39,7 @@ python.toolchain(
 #
 # Testing
 #
-bazel_dep(name = "catch2", version = "3.4.0")
+bazel_dep(name = "catch2", version = "3.5.1")
 
 #
 # Assembly

@@ -1,0 +1,21 @@
+# This file contains various fixes for clangd's intellisense.
+# So we also dont have to patch compile_commands.json
+
+---
+# Kernel headers requires Kernel.h to be included first.
+# They are in source files, but clangd doesn't understand that.
+
+If:
+  PathMatch: kernel/include/.*\.h
+
+CompileFlags:
+  Add: [-include, kernel/include/Kernel.h]
+
+---
+# RuntimeLib Headers also requires RuntimeLib.h to be included first.
+
+If:
+  PathMatch: lib/runtime/include/.*\.h
+
+CompileFlags:
+  Add: [-include, lib/runtime/include/RuntimeLib.h]

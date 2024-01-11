@@ -5,11 +5,10 @@ PAGE_ALLOCATOR* g_PageAllocator;
 
 VOID
 CommonStartupRoutine (
-    PAGE_ALLOCATOR* BumpAllocator
+    PAGE_ALLOCATOR* PageAllocator
     )
 {
-    // TODO: g_PageAllocator = BuddyAllocatorInit (BumpAllocator);
-    g_PageAllocator = BumpAllocator;
+    g_PageAllocator = PageAllocator;
 
     KernelMain ();
 }

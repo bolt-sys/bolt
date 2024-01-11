@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch QEMU (X64)",
+            "name": "Launch QEMU (X64) (LLDB)",
             "type": "lldb",
             "preLaunchTask": "launch_qemu-x64",
             "request": "attach",
@@ -19,6 +19,28 @@
             "sourceMap": {
                 "/proc/self/cwd": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "Launch QEMU (X64) (GDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "launch_qemu-x64",
+            "program": "${workspaceFolder}/bazel-bin/kernel/kernel",
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "localhost:1234",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
             "name": "Debug //lib/runtime:allocator_test",

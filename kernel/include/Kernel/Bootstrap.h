@@ -6,5 +6,5 @@
 
 VOID
 CommonStartupRoutine (
-    PAGE_ALLOCATOR* BumpAllocator
+    PAGE_ALLOCATOR* PageAllocator
     );

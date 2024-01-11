@@ -5,6 +5,7 @@ nasm_cc_binary(
     srcs = [
         "include/Kernel.h",
         "include/Kernel/Bootstrap.h",
+        "include/Kernel/Logging.h",
         "include/Kernel/X64/GDT.h",
         "include/Kernel/X64/IDT.h",
         "source/Bootstrap/Common.c",

@@ -6,6 +6,7 @@
 #include <RuntimeLib.h>
 
 #include "Kernel/Bootstrap.h"
+#include "Kernel/Logging.h"
 
 #include "Kernel/X64/GDT.h"
 #include "Kernel/X64/IDT.h"

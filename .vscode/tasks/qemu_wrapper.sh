@@ -14,6 +14,8 @@ QEMU_ARGS=(
     -m     "2G"
     -smp   "cores=2,threads=1,sockets=1" # 2 cores
     -drive "file=bazel-bin/image/cd.iso,format=raw,if=ide,index=0,media=cdrom" # Boot from the OS ISO
+
+    -serial "mon:stdio" # Redirect serial output to the terminal
 )
 
 CUSTOM_ARGS=$(cat .vscode/qemu_args.txt)

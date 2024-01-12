@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # This script is a wrapper for qemu-system-x86_64 that sets up the
 # environment for the VM to run in. It is called by the VSCode task
 # "launch_qemu-x64" (Ctrl+Shift+B).
@@ -14,6 +16,8 @@ QEMU_ARGS=(
     -drive "file=bazel-bin/image/cd.iso,format=raw,if=ide,index=0,media=cdrom" # Boot from the OS ISO
 )
 
-qemu-system-x86_64 "${QEMU_ARGS[@]}"
+CUSTOM_ARGS=$(cat .vscode/qemu_args.txt)
+
+qemu-system-x86_64 "${QEMU_ARGS[@]}" $CUSTOM_ARGS
 
 echo "QEMU VM stopped. ($?)"

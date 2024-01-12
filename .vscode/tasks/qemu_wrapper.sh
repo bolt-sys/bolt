@@ -8,6 +8,7 @@ set -euo pipefail
 
 # This is required for the VSCode debugger to work.
 echo "Starting QEMU VM..."
+echo "-------------------"
 
 QEMU_ARGS=(
     -s     "-S" # Start the VM in a paused state (Wait for debugger to connect)
@@ -21,5 +22,8 @@ QEMU_ARGS=(
 CUSTOM_ARGS=$(cat .vscode/qemu_args.txt)
 
 qemu-system-x86_64 "${QEMU_ARGS[@]}" $CUSTOM_ARGS
+QEMU_EXIT_CODE=$?
 
-echo "QEMU VM stopped. ($?)"
+echo ""
+echo "-------------------"
+echo "QEMU VM stopped. ($QEMU_EXIT_CODE)"

@@ -1,6 +1,6 @@
 # Bolt
 
-An operating completely written from scratch in C, C++, Assembly and various other languages.
+An operating system completely written from scratch in C, C++, Assembly and various other languages.
 depending on the needs of the project.
 
 **NOTE: This project is still in early development and is not ready for use.**

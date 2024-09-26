@@ -9,6 +9,9 @@
     - [Commit Messages](#commit-messages)
     - [Pull Requests](#pull-requests)
     - [Coding Style](#coding-style)
+    - [Navigation](#navigation)
+    - [Code of Conduct](#code-of-conduct)
+    - [License](#license)
 
 ## How to Contribute
 

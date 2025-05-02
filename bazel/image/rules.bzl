@@ -1,9 +1,5 @@
 """
-*TODO*: make this fully hermetic. it still requires system packages right now.
-
-### Packages
-  * ubuntu: `sudo apt install xorriso`
-  * macos: `brew install xorriso`
+Bazel rules for creating disk images
 """
 
 def _image_impl(ctx):

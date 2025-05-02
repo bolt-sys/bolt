@@ -1,4 +1,12 @@
-module(name = "bolt")
+"""
+Bazel module for BoltOS.
+"""
+
+module(
+    name = "bolt",
+    version = "0.0.1",
+    compatibility_level = 1,
+)
 
 #
 # Constraints / Configuration for cross-platform setup.

@@ -1,3 +1,7 @@
+"""
+Bazel rules for transitions.
+"""
+
 load(":platform.bzl", "platforms_transition")
 
 def _host_binary_impl(ctx):
@@ -21,12 +25,9 @@ def _host_binary_impl(ctx):
         ),
     ]
 
-"""
-Creates a binary that can be run on the host using the host toolchain.
-"""
 host_binary = rule(
-    implementation=_host_binary_impl,
-    attrs={
+    implementation = _host_binary_impl,
+    attrs = {
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
         ),

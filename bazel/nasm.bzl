@@ -1,3 +1,9 @@
+"""
+Bazel rules for nasm assembly compilation.
+"""
+
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
 def _nasm_compile_impl(ctx):
     output = ctx.outputs.obj_file
     src = ctx.file.src
@@ -29,6 +35,13 @@ nasm_compile = rule(
 def nasm_cc_binary(name, srcs, deps = [], asmopts = "", **kwargs):
     """
     Macro to add nasm assembly compilation to a cc_binary rule.
+
+    Args:
+        name: The name of the rule.
+        srcs: The source files to compile.
+        deps: The dependencies of the rule.
+        asmopts: The options to pass to the nasm compiler.
+        **kwargs: Additional arguments to pass to the cc_binary rule.
     """
     asm_srcs = [src for src in srcs if src.endswith(".asm")]
     cc_srcs = [src for src in srcs if not src.endswith(".asm")]
@@ -43,7 +56,7 @@ def nasm_cc_binary(name, srcs, deps = [], asmopts = "", **kwargs):
         )
         asm_objs.append(obj)
 
-    native.cc_binary(
+    cc_binary(
         name = name,
         srcs = cc_srcs + asm_objs,
         deps = deps,

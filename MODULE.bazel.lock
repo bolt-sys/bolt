@@ -152,8 +152,8 @@
   "moduleExtensions": {
     "//:bazel/extensions.bzl%non_module_dependencies": {
       "general": {
-        "bzlTransitiveDigest": "T5Rlfthxzz4eWc3Rm3bd8FE3tMbqtFDbqQtrkoIAr9Q=",
-        "usagesDigest": "rUFxrGXMao6I2fNW+ju++UDUBhy9HyGCMOkigwqTTI8=",
+        "bzlTransitiveDigest": "X6ME2QRd+28SSeGFgys5atyw8KFy9H9Y5TzWNaWKTdw=",
+        "usagesDigest": "XnrYjaaX+6v4b0/3YNmg8zImGyr/pTKcBt6eqmVh11A=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},

@@ -6,7 +6,7 @@ image(
         "//kernel",
 
         # Configuration
-        "cd/limine.cfg",
+        "cd/limine.conf",
 
         # UEFI
         "@limine//:BOOTAA64.EFI",

@@ -83,7 +83,6 @@ We aren't there yet.
 
 Join our community to stay updated and get involved:
 
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. \

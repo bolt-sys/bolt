@@ -33,14 +33,13 @@ nasm_compile = rule(
 )
 
 def nasm_cc_binary(name, srcs, deps = [], asmopts = "", **kwargs):
-    """
-    Macro to add nasm assembly compilation to a cc_binary rule.
+    """Macro to add nasm assembly compilation to a cc_binary rule.
 
     Args:
-        name: The name of the rule.
-        srcs: The source files to compile.
-        deps: The dependencies of the rule.
-        asmopts: The options to pass to the nasm compiler.
+        name: Name of the rule.
+        srcs: List of source files to compile. Files ending in .asm will be compiled with nasm.
+        deps: List of dependencies for the rule.
+        asmopts: String of options to pass to the nasm compiler.
         **kwargs: Additional arguments to pass to the cc_binary rule.
     """
     asm_srcs = [src for src in srcs if src.endswith(".asm")]

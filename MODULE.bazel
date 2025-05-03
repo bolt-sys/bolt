@@ -5,7 +5,6 @@ Bazel module for BoltOS.
 module(
     name = "bolt",
     version = "0.0.1",
-    compatibility_level = 1,
 )
 
 #

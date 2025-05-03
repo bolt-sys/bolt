@@ -14,7 +14,7 @@ The `compile-commands.json` file is used by the `clangd` extension in VSCode to 
 To generate a `compile-commands.json` file, run the following command in your shell:
 
 ```shell
-bazel run //:refresh_compile_commands
+bazel run //:compile_commands
 ```
 
 ### Generating and Viewing Code Coverage

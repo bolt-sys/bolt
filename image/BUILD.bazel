@@ -1,6 +1,6 @@
-load("//bazel/image:rules.bzl", "image")
+load("//bazel/image:rules.bzl", "iso_image")
 
-image(
+iso_image(
     name = "cd",
     srcs = [
         "//kernel",
@@ -19,5 +19,4 @@ image(
         "@limine//:limine-bios-cd.bin",
         "@limine//:limine-bios.sys",
     ],
-    type = "iso",
 )
